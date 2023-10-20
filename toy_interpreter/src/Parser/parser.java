@@ -28,7 +28,11 @@ public class parser {
 	}
 	
 	public void createTree(List<List<Token>> tokens) {
-		
+		/*
+		 idea: take a loook at list of tokens --> find the operators first
+		 each operator token should be in-between numbers/identifiers --> if not, throw error & exit 
+		 create nodes based on operators and left/right branches based on the numbers/identifiers they're in-between (and order of precedence)
+		 */
 	}
 	
 	
