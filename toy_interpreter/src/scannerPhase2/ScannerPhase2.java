@@ -85,16 +85,6 @@ public class ScannerPhase2 {
 						longest_substring = ""; 
 					}
 					
-					else if (longest_substring.matches(keyword)) {
-						while (iter + 1 < line.length() && (longest_substring + line.charAt(iter+1)).matches(keyword)) {
-							iter ++;
-							longest_substring += line.charAt(iter);
-						}
-//						System.out.println(longest_substring + ": ERROR");
-						separated_result_tokens.add(new Token(TokenType.KEYWORD, longest_substring));
-						longest_substring = ""; 
-					}
-					
 					else if (longest_substring.matches(identifier)) {
 						while (iter + 1 < line.length() && (longest_substring + line.charAt(iter+1)).matches(identifier)) {
 							iter ++;
