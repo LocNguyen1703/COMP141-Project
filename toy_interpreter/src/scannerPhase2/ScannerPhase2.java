@@ -7,7 +7,7 @@ import java.io.*;
 
 public class ScannerPhase2 {
 
-	static class Token {
+	public static class Token {
         TokenType type;
         String value;
 

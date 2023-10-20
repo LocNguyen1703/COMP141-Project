@@ -1,39 +1,27 @@
-Line: x32 := 36 - y;
-x32: IDENTIFIER
-:=: SYMBOL
-36: NUMBER
+Line: 34 + 89 - x * y23
+34: NUMBER
++: SYMBOL
+89: NUMBER
 -: SYMBOL
-y: IDENTIFIER
-;: SYMBOL
+x: IDENTIFIER
+*: SYMBOL
+y23: IDENTIFIER
 
-Line: if y then
-if: KEYWORD
-y: IDENTIFIER
-then: KEYWORD
+Line: cxo6y / 67z23 * 56& 34 * x
+cxo6y: IDENTIFIER
+/: SYMBOL
+z23: IDENTIFIER
+67: NUMBER
+23: NUMBER
+*: SYMBOL
+56: NUMBER
+&: ERROR
+34: NUMBER
+*: SYMBOL
+x: IDENTIFIER
 
-Line: 	x32 :=0; skip
-x32: IDENTIFIER
-32: NUMBER
-0: NUMBER
-:=: SYMBOL
-;: SYMBOL
-skip: KEYWORD
-
-Line: else
-else: KEYWORD
-
-Line: 	whiley := 12^2;
-whiley: IDENTIFIER
-:=: SYMBOL
-12: NUMBER
+Line: 2 + x
 2: NUMBER
-;: SYMBOL
-
-Line: 	z:= x32
-z: IDENTIFIER
-:=: SYMBOL
-x32: IDENTIFIER
-
-Line: endif
-endif: KEYWORD
++: SYMBOL
+x: IDENTIFIER
 
