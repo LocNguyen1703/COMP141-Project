@@ -25,17 +25,17 @@ public class parser {
 		int index;
 		int numTabs;
 	
-		public TreeNode(Token token) {
+		public TreeNode(Token token, Token next_token) {
 			this.dataToken = token;
-			this.next_token = token;
+			this.next_token = next_token;
 			this.left = null;
 			this.right = null;
 			this.mid = null;
 		}
 		
-		public TreeNode(Token token, TreeNode left, TreeNode right, TreeNode mid, int numTabs) {
+		public TreeNode(Token token, Token next_token, TreeNode left, TreeNode right, TreeNode mid, int numTabs) {
 			this.dataToken = token;
-			this.next_token = token;
+			this.next_token = next_token;
 			this.left = left;
 			this.right = right;
 			this.mid = mid;
@@ -54,6 +54,10 @@ public class parser {
 			this.mid = node;
 		}
 		
+		public void setNextToken (Token token) {
+			this.next_token = token;
+		}
+		
 		public TreeNode getRightChild() {
 			return this.right;
 		}
@@ -70,11 +74,17 @@ public class parser {
 			return this.dataToken;
 		}
 		
-		public void consumeToken(List<Token> tokens) {
+		public void insertNodeLeftRecursive (TreeNode node, TreeNode left, TreeNode right, TreeNode mid) {
+			
+		}
+		
+		public Token consumeToken(List<Token> tokens) {
 			if (index+1 < tokens.size()) {
 				index ++; 
 				next_token = tokens.get(index);
 			}
+			
+			return next_token;
 			
 		}
 		
@@ -93,9 +103,16 @@ public class parser {
 //			Token e = findToken(tokens, "+");
 			
 			TreeNode t = parseTerm(tokens, numTabs);
-			while (next_token.getValue() == "+") {
-				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
+			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
+			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
+			//it jumped out of while loop and returned...
+			while (next_token.getValue() == "\\+") {
+				Token e = consumeToken(tokens);
+				//I'm bothered by the new TreeNode thing - do I create a void method to insert Node instead of using constructor?
+				//problem - since there's no setting for next_token in constructor, the next_token automatically gets assigned to null
+				//fix: i tried setting next_token to the same value as token in constructor --> problem: next_token is supposed to be 
+				//1 index ahead of token, but now it's not --> it's not detecting any operators I think
+				t = new TreeNode(next_token, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1); 
 			}
 			
 			return t;
@@ -104,9 +121,9 @@ public class parser {
 		//Subtraction
 		public TreeNode parseTerm(List<Token> tokens, int numTabs) {
 			TreeNode t = parseFactor(tokens, numTabs + 1);
-			while (next_token.getValue() == "-") {
-				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
+			while (next_token.getValue() == "\\-") {
+				Token e = consumeToken(tokens);
+				t = new TreeNode(next_token, e, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
@@ -117,8 +134,8 @@ public class parser {
 		public TreeNode parseFactor(List<Token> tokens, int numTabs) { 
 			TreeNode t = parsePiece(tokens, numTabs + 1);
 			while (next_token.getValue() == "/") {
-				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
+				Token e = consumeToken(tokens);
+				t = new TreeNode(next_token, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
@@ -127,9 +144,9 @@ public class parser {
 		//Multiplication
 		public TreeNode parsePiece(List<Token> tokens, int numTabs) {
 			TreeNode t = parseElement(tokens, numTabs + 1);
-			while (next_token.getValue() == "*") {
-				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
+			while (next_token.getValue() == "\\*") {
+				Token e =consumeToken(tokens);
+				t = new TreeNode(next_token, e, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
@@ -137,10 +154,10 @@ public class parser {
 		
 		//parentheses or Number/Identifier
 		public TreeNode parseElement(List<Token> tokens, int numTabs) {
-			if (next_token.getValue() == "(") {
+			if (next_token.getValue() == "\\(") {
 				consumeToken(tokens);
 				TreeNode t = parseExpr(tokens, numTabs + 1);
-				if (next_token.getValue() == ")") {
+				if (next_token.getValue() == "\\)") {
 					consumeToken(tokens);
 					return t;
 				}
@@ -154,14 +171,14 @@ public class parser {
 			
 			else if (next_token.getType() == TokenType.IDENTIFIER) {
 				Token temp = next_token; 
-				consumeToken(tokens);
-				return new TreeNode (temp);
+				Token e = consumeToken(tokens);
+				return new TreeNode (temp, e);
 			}
 			
 			else if (next_token.getType() == TokenType.NUMBER) {
 				Token temp = next_token; 
-				consumeToken(tokens);
-				return new TreeNode (temp);
+				Token e =consumeToken(tokens);
+				return new TreeNode (temp, e);
 			}
 			
 			//if none of the if-statements work --> we return null --> when we iterate and print Tree we print error there and stop
@@ -280,7 +297,7 @@ public class parser {
 		List<List<Token>> tokens = ScannerPhase2.tokenizeFile(inputFile);
 		writeFile(tokens, inputFile, outputFile);
 		for (List<Token> i : tokens) {
-			TreeNode node = new TreeNode(i.get(0));
+			TreeNode node = new TreeNode(i.get(0), i.get(0));
 			node.parseExpr(i, 0);
 			writeAST(node, inputFile, outputFile);
 		}

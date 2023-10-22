@@ -1,13 +1,7 @@
-Line: 3 * (5 + 2 / x - 1)
+Line: 3 + 4 + 5
 3: NUMBER
-*: SYMBOL
-(: SYMBOL
-5: NUMBER
 +: SYMBOL
-2: NUMBER
-/: SYMBOL
-x: IDENTIFIER
--: SYMBOL
-1: NUMBER
-): SYMBOL
+4: NUMBER
++: SYMBOL
+5: NUMBER
 
