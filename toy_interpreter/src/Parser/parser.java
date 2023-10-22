@@ -1,5 +1,9 @@
 package Parser;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import scannerPhase2.ScannerPhase2;
@@ -19,19 +23,23 @@ public class parser {
 		Token dataToken;
 		Token next_token; 
 		int index;
+		int numTabs;
 	
 		public TreeNode(Token token) {
 			this.dataToken = token;
+			this.next_token = token;
 			this.left = null;
 			this.right = null;
 			this.mid = null;
 		}
 		
-		public TreeNode(Token token, TreeNode left, TreeNode right, TreeNode mid) {
+		public TreeNode(Token token, TreeNode left, TreeNode right, TreeNode mid, int numTabs) {
 			this.dataToken = token;
+			this.next_token = token;
 			this.left = left;
 			this.right = right;
 			this.mid = mid;
+			this.numTabs = numTabs;
 		}
 		
 		public void setRightChild(TreeNode node) {
@@ -40,6 +48,26 @@ public class parser {
 		
 		public void setLeftChild(TreeNode node)	{
 			this.left = node;
+		}
+		
+		public void setMidChild (TreeNode node) {
+			this.mid = node;
+		}
+		
+		public TreeNode getRightChild() {
+			return this.right;
+		}
+		
+		public TreeNode getLeftChild() {
+			return this.left;
+		}
+		
+		public TreeNode getMidChild() {
+			return this.mid;
+		}
+		
+		public Token getDataToken() {
+			return this.dataToken;
 		}
 		
 		public void consumeToken(List<Token> tokens) {
@@ -61,23 +89,24 @@ public class parser {
 		// is simpler - it's only trying to parse 1 line at a time
 		
 		//Addition
-		public TreeNode parseExpr(List<Token> tokens) {
+		public TreeNode parseExpr(List<Token> tokens, int numTabs) {
 //			Token e = findToken(tokens, "+");
-			TreeNode t = parseTerm(tokens);
-			while (next_token.getValue() == "//+") {
+			
+			TreeNode t = parseTerm(tokens, numTabs);
+			while (next_token.getValue() == "+") {
 				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseTerm(tokens));
+				t = new TreeNode(next_token, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
 		}
 
 		//Subtraction
-		public TreeNode parseTerm(List<Token> tokens) {
-			TreeNode t = parseFactor(tokens);
+		public TreeNode parseTerm(List<Token> tokens, int numTabs) {
+			TreeNode t = parseFactor(tokens, numTabs + 1);
 			while (next_token.getValue() == "-") {
 				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseFactor(tokens));
+				t = new TreeNode(next_token, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
@@ -85,33 +114,32 @@ public class parser {
 		}
 		
 		//Division
-		public TreeNode parseFactor(List<Token> tokens) { 
-			TreeNode t = parsePiece(tokens);
+		public TreeNode parseFactor(List<Token> tokens, int numTabs) { 
+			TreeNode t = parsePiece(tokens, numTabs + 1);
 			while (next_token.getValue() == "/") {
 				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseTerm(tokens));
+				t = new TreeNode(next_token, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
 		}
 		
-		
 		//Multiplication
-		public TreeNode parsePiece(List<Token> tokens) {
-			TreeNode t = parseElement(tokens);
-			while (next_token.getValue() == "/") {
+		public TreeNode parsePiece(List<Token> tokens, int numTabs) {
+			TreeNode t = parseElement(tokens, numTabs + 1);
+			while (next_token.getValue() == "*") {
 				consumeToken(tokens);
-				t = new TreeNode(next_token, t, null, parseElement(tokens));
+				t = new TreeNode(next_token, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
 			}
 			
 			return t;
 		}
 		
 		//parentheses or Number/Identifier
-		public TreeNode parseElement(List<Token> tokens) {
+		public TreeNode parseElement(List<Token> tokens, int numTabs) {
 			if (next_token.getValue() == "(") {
 				consumeToken(tokens);
-				TreeNode t = parseExpr(tokens);
+				TreeNode t = parseExpr(tokens, numTabs + 1);
 				if (next_token.getValue() == ")") {
 					consumeToken(tokens);
 					return t;
@@ -220,9 +248,29 @@ public class parser {
 //	}
 	
 	
-//	public static void AST(List<List<Token>> tokens) {
-//		
-//	}
+	public static void writeAST(TreeNode node, String inputFile, String outputFile) {
+		System.out.println(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+		if (node.getLeftChild() != null) writeAST(node.getLeftChild(), inputFile, outputFile);
+		if (node.getRightChild() != null) writeAST(node.getRightChild(), inputFile, outputFile);
+	}
+	
+	public static void writeFile(List<List<Token>> tokens, String inputFile, String outputFile) throws IOException {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))){
+			String line;
+			// printing out the input line
+			try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
+				for (List<Token> list : tokens) {
+					if ((line = br.readLine()) != null) bw.write("Line: " + line);
+					bw.newLine();
+					for (Token token : list) {
+						bw.write(token.getValue() + ": " + token.getType());
+						bw.newLine();
+					}
+					bw.newLine();
+				}
+            }
+		}
+	}
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
@@ -230,11 +278,11 @@ public class parser {
 		String outputFile = args[1];
 		
 		List<List<Token>> tokens = ScannerPhase2.tokenizeFile(inputFile);
+		writeFile(tokens, inputFile, outputFile);
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0));
-			node.parseExpr(i);
+			node.parseExpr(i, 0);
+			writeAST(node, inputFile, outputFile);
 		}
-		
-	}	
-
+	}
 }
