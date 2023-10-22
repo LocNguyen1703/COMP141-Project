@@ -25,7 +25,7 @@ public class ScannerPhase2 {
         }
     }
 	
-	enum TokenType {
+	public enum TokenType {
 		//for project phase 1.2, we have to add in KEYWORD type
 		IDENTIFIER, NUMBER, SYMBOL, KEYWORD, ERROR
 	}
