@@ -125,12 +125,13 @@ public class parser {
 			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
 			//it jumped out of while loop and returned...
 			while (next_token.getValue().equals("+")) {
+				Token temp = next_token;
 				Token e = consumeToken(tokens);
 				//I'm bothered by the new TreeNode thing - do I create a void method to insert Node instead of using constructor?
 				//problem - since there's no setting for next_token in constructor, the next_token automatically gets assigned to null
 				//fix: i tried setting next_token to the same value as token in constructor --> problem: next_token is supposed to be 
 				//1 index ahead of token, but now it's not --> it's not detecting any operators I think
-				t = new TreeNode(next_token, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
 //				t.setNode(t, next_token, e, t, null, parseTerm(tokens, numTabs+1), numTabs+1);
 			}
 			
@@ -141,8 +142,9 @@ public class parser {
 		public TreeNode parseTerm(List<Token> tokens, int numTabs) {
 			TreeNode t = parseFactor(tokens, numTabs + 1);
 			while (next_token.getValue().equals("-")) {
+				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(next_token, e, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
 //				t.setNode(t, next_token, e, t, null, parseFactor(tokens, numTabs+1), numTabs+1);
 			}
 			
@@ -154,8 +156,9 @@ public class parser {
 		public TreeNode parseFactor(List<Token> tokens, int numTabs) { 
 			TreeNode t = parsePiece(tokens, numTabs + 1);
 			while (next_token.getValue().equals("/")) {
+				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(next_token, e, t, null, parsePiece(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parsePiece(tokens, numTabs + 1), numTabs + 1);
 //				t.setNode(t, next_token, e, t, null, parsePiece(tokens, numTabs+1), numTabs+1);
 			}
 			
@@ -166,8 +169,9 @@ public class parser {
 		public TreeNode parsePiece(List<Token> tokens, int numTabs) {
 			TreeNode t = parseElement(tokens, numTabs + 1);
 			while (next_token.getValue().equals("*")) {
+				Token temp = next_token;
 				Token e =consumeToken(tokens);
-				t = new TreeNode(next_token, e, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
 //				t.setNode(t, next_token, e, t, null, parseElement(tokens, numTabs+1), numTabs+1);
 			}
 			
