@@ -33,13 +33,17 @@ public class parser {
 			this.mid = null;
 		}
 		
-		public TreeNode(Token token, Token next_token, TreeNode left, TreeNode right, TreeNode mid, int numTabs) {
+		public TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs) {
 			this.dataToken = token;
 			this.next_token = next_token;
 			this.left = left;
 			this.right = right;
 			this.mid = mid;
 			this.numTabs = numTabs;
+		}
+		
+		public void setDataToken(Token token) {
+			this.dataToken = token;
 		}
 		
 		public void setRightChild(TreeNode node) {
@@ -58,6 +62,10 @@ public class parser {
 			this.next_token = token;
 		}
 		
+		public void setNumTabs (int numTabs) {
+			this.numTabs = numTabs;
+		}
+		
 		public TreeNode getRightChild() {
 			return this.right;
 		}
@@ -74,7 +82,17 @@ public class parser {
 			return this.dataToken;
 		}
 		
-		public void insertNodeLeftRecursive (TreeNode node, TreeNode left, TreeNode right, TreeNode mid) {
+//		public void insertNodeLeftRecursive (TreeNode node, TreeNode left, TreeNode right, TreeNode mid) {
+//			
+//		}
+		
+		public void setNode(TreeNode node, Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs) {
+			node.setDataToken(token);
+			node.setNextToken(next_token);
+			node.setLeftChild(left);
+			node.setMidChild(mid);
+			node.setRightChild(right);
+			node.setNumTabs(numTabs);
 			
 		}
 		
@@ -106,13 +124,14 @@ public class parser {
 			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
 			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
 			//it jumped out of while loop and returned...
-			while (next_token.getValue() == "\\+") {
+			while (next_token.getValue().equals("+")) {
 				Token e = consumeToken(tokens);
 				//I'm bothered by the new TreeNode thing - do I create a void method to insert Node instead of using constructor?
 				//problem - since there's no setting for next_token in constructor, the next_token automatically gets assigned to null
 				//fix: i tried setting next_token to the same value as token in constructor --> problem: next_token is supposed to be 
 				//1 index ahead of token, but now it's not --> it's not detecting any operators I think
-				t = new TreeNode(next_token, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1); 
+				t = new TreeNode(next_token, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
+//				t.setNode(t, next_token, e, t, null, parseTerm(tokens, numTabs+1), numTabs+1);
 			}
 			
 			return t;
@@ -121,9 +140,10 @@ public class parser {
 		//Subtraction
 		public TreeNode parseTerm(List<Token> tokens, int numTabs) {
 			TreeNode t = parseFactor(tokens, numTabs + 1);
-			while (next_token.getValue() == "\\-") {
+			while (next_token.getValue().equals("-")) {
 				Token e = consumeToken(tokens);
 				t = new TreeNode(next_token, e, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
+//				t.setNode(t, next_token, e, t, null, parseFactor(tokens, numTabs+1), numTabs+1);
 			}
 			
 			return t;
@@ -133,9 +153,10 @@ public class parser {
 		//Division
 		public TreeNode parseFactor(List<Token> tokens, int numTabs) { 
 			TreeNode t = parsePiece(tokens, numTabs + 1);
-			while (next_token.getValue() == "/") {
+			while (next_token.getValue().equals("/")) {
 				Token e = consumeToken(tokens);
-				t = new TreeNode(next_token, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(next_token, e, t, null, parsePiece(tokens, numTabs + 1), numTabs + 1);
+//				t.setNode(t, next_token, e, t, null, parsePiece(tokens, numTabs+1), numTabs+1);
 			}
 			
 			return t;
@@ -144,9 +165,10 @@ public class parser {
 		//Multiplication
 		public TreeNode parsePiece(List<Token> tokens, int numTabs) {
 			TreeNode t = parseElement(tokens, numTabs + 1);
-			while (next_token.getValue() == "\\*") {
+			while (next_token.getValue().equals("*")) {
 				Token e =consumeToken(tokens);
 				t = new TreeNode(next_token, e, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
+//				t.setNode(t, next_token, e, t, null, parseElement(tokens, numTabs+1), numTabs+1);
 			}
 			
 			return t;
@@ -154,10 +176,10 @@ public class parser {
 		
 		//parentheses or Number/Identifier
 		public TreeNode parseElement(List<Token> tokens, int numTabs) {
-			if (next_token.getValue() == "\\(") {
+			if (next_token.getValue().equals("(")) {
 				consumeToken(tokens);
 				TreeNode t = parseExpr(tokens, numTabs + 1);
-				if (next_token.getValue() == "\\)") {
+				if (next_token.getValue().equals(")")) {
 					consumeToken(tokens);
 					return t;
 				}
@@ -298,7 +320,11 @@ public class parser {
 		writeFile(tokens, inputFile, outputFile);
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0), i.get(0));
-			node.parseExpr(i, 0);
+//			System.out.println(node.getDataToken().getValue());
+			node = node.parseExpr(i, 0);
+//			System.out.println(node.getDataToken().getValue());
+//			System.out.println(node.getLeftChild().getDataToken().getValue());
+//			System.out.println(node.getRightChild().getDataToken().getValue());
 			writeAST(node, inputFile, outputFile);
 		}
 	}
