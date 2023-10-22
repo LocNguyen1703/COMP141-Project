@@ -291,13 +291,20 @@ public class parser {
 //	}
 	
 	
-	public static void writeAST(TreeNode node, String inputFile, String outputFile) {
+	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException {
 		System.out.println(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-		if (node.getLeftChild() != null) writeAST(node.getLeftChild(), inputFile, outputFile);
-		if (node.getRightChild() != null) writeAST(node.getRightChild(), inputFile, outputFile);
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
+			for (int i = 0; i < numTabs; i++) {
+				bw.write("\t");
+			}
+			bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+			bw.newLine();
+		}
+		if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
+		if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
 	}
 	
-	public static void writeFile(List<List<Token>> tokens, String inputFile, String outputFile) throws IOException {
+	public static void writeTokens(List<List<Token>> tokens, String inputFile, String outputFile) throws IOException {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))){
 			String line;
 			// printing out the input line
@@ -311,6 +318,8 @@ public class parser {
 					}
 					bw.newLine();
 				}
+				bw.write("AST:");
+				bw.newLine();
             }
 		}
 	}
@@ -321,7 +330,9 @@ public class parser {
 		String outputFile = args[1];
 		
 		List<List<Token>> tokens = ScannerPhase2.tokenizeFile(inputFile);
-		writeFile(tokens, inputFile, outputFile);
+//		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+		writeTokens(tokens, inputFile, outputFile);
+		int numTab = 0;
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0), i.get(0));
 //			System.out.println(node.getDataToken().getValue());
@@ -329,7 +340,7 @@ public class parser {
 //			System.out.println(node.getDataToken().getValue());
 //			System.out.println(node.getLeftChild().getDataToken().getValue());
 //			System.out.println(node.getRightChild().getDataToken().getValue());
-			writeAST(node, inputFile, outputFile);
+			writeAST(node, outputFile, numTab);
 		}
 	}
 }
