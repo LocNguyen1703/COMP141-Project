@@ -28,6 +28,7 @@ public class parser {
 		Token next_token; 
 		int index;
 		int numTabs;
+		Boolean Error;
 	
 		public TreeNode(Token token, Token next_token) {
 			this.dataToken = token;
@@ -68,6 +69,10 @@ public class parser {
 		
 		public void setNumTabs (int numTabs) {
 			this.numTabs = numTabs;
+		}
+		
+		public void setErrorDetection (Boolean error) {
+			this.Error = error;
 		}
 		
 		public TreeNode getRightChild() {
@@ -129,19 +134,33 @@ public class parser {
 				
 				//this if statement is to check whether consumeToken returns the same next_token
 				//if (temp == e) return new TreeNode(temp, e, t, null, null, numTabs + 1);
-				if ((t.getLeftChild() == null || t.getRightChild() == null) && t.getDataToken().getType() == TokenType.SYMBOL) {
+
+				
+//				if ((t.getLeftChild() == null || t.getRightChild() == null) && t.getDataToken().getType() == TokenType.SYMBOL) {
+//					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
+//						bw.write("error");
+//						bw.newLine();
+//						break;
+//					}
+//					catch(IOException a) {
+//						a.printStackTrace();
+//					}
+//				}
+				
+				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1, outputFile), numTabs + 1);
+				
+				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-						bw.write("error");
+						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
 						bw.newLine();
-						break;
+						return t;
 					}
 					catch(IOException a) {
 						a.printStackTrace();
 					}
 				}
-				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1, outputFile), numTabs + 1);
-			}
 			
+			}
 			return t;
 		}
 
@@ -152,6 +171,17 @@ public class parser {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
 				t = new TreeNode(temp, e, t, null, parseFactor(tokens, numTabs + 1, outputFile), numTabs + 1);
+				
+				if (t.getLeftChild() == null || t.getRightChild() == null) {
+					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
+						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+						bw.newLine();
+						return t;
+					}
+					catch(IOException a) {
+						a.printStackTrace();
+					}
+				}
 			}
 			
 			return t;
@@ -165,6 +195,17 @@ public class parser {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
 				t = new TreeNode(temp, e, t, null, parsePiece(tokens, numTabs + 1, outputFile), numTabs + 1);
+				
+				if (t.getLeftChild() == null || t.getRightChild() == null) {
+					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
+						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+						bw.newLine();
+						return t;
+					}
+					catch(IOException a) {
+						a.printStackTrace();
+					}
+				}
 			}
 			
 			return t;
@@ -177,6 +218,17 @@ public class parser {
 				Token temp = next_token;
 				Token e =consumeToken(tokens);
 				t = new TreeNode(temp, e, t, null, parseElement(tokens, numTabs + 1, outputFile), numTabs + 1);
+				
+				if (t.getLeftChild() == null || t.getRightChild() == null) {
+					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
+						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+						bw.newLine();
+						return t;
+					}
+					catch(IOException a) {
+						a.printStackTrace();
+					}
+				}
 			}
 			
 			return t;
