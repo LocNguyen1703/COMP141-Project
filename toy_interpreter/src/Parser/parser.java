@@ -124,7 +124,7 @@ public class parser {
 		public TreeNode parseExpr(List<Token> tokens, int numTabs) {
 //			Token e = findToken(tokens, "+");
 			
-			TreeNode t = parseTerm(tokens, numTabs);
+			TreeNode t = parseTerm(tokens, numTabs + 1);
 			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
 			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
 			//it jumped out of while loop and returned...
@@ -135,6 +135,9 @@ public class parser {
 				//problem - since there's no setting for next_token in constructor, the next_token automatically gets assigned to null
 				//fix: i tried setting next_token to the same value as token in constructor --> problem: next_token is supposed to be 
 				//1 index ahead of token, but now it's not --> it's not detecting any operators I think
+				
+				//this if statement is to check whether consumeToken returns the same next_token
+				//if (temp == e) return new TreeNode(temp, e, t, null, null, numTabs + 1);
 				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
 //				t.setNode(t, next_token, e, t, null, parseTerm(tokens, numTabs+1), numTabs+1);
 			}
@@ -295,17 +298,32 @@ public class parser {
 //	}
 	
 	
-	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException {
-		System.out.println(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-			for (int i = 0; i < numTabs; i++) {
-				bw.write("\t");
+	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException, NullPointerException {
+//		System.out.println(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+		try {
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
+				
+				if ((node.getLeftChild() == null || node.getRightChild() == null) && node.getDataToken().getType() == TokenType.SYMBOL) {
+					bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+					bw.newLine();
+					bw.write("error");
+					bw.newLine();
+				}
+				else {
+					for (int i = 0; i < numTabs; i++) {
+						bw.write("\t");
+					}
+					
+					bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+					bw.newLine();
+				}
 			}
-			bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-			bw.newLine();
+			if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
+			if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
 		}
-		if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
-		if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
+		catch(NullPointerException e) {
+			e.getStackTrace();
+		}
 	}
 	
 	public static void writeTokens(List<List<Token>> tokens, String inputFile, String outputFile) throws IOException {
