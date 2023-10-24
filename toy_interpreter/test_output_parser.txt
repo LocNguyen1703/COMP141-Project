@@ -1,13 +1,12 @@
-Line: 3 * 4 +
+Line: 3 + 4 - + 5
 3: NUMBER
-*: SYMBOL
-4: NUMBER
 +: SYMBOL
+4: NUMBER
+-: SYMBOL
++: SYMBOL
+5: NUMBER
 
 AST:
-error at +: SYMBOL
+error at -: SYMBOL
 +: SYMBOL
-error
-	*: SYMBOL
-		3: NUMBER
-		4: NUMBER
+error	5: NUMBER

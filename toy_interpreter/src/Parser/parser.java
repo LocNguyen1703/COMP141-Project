@@ -28,7 +28,7 @@ public class parser {
 		Token next_token; 
 		int index;
 		int numTabs;
-		Boolean Error;
+		Boolean Error = false;
 	
 		public TreeNode(Token token, Token next_token) {
 			this.dataToken = token;
@@ -89,6 +89,10 @@ public class parser {
 		
 		public Token getDataToken() {
 			return this.dataToken;
+		}
+		
+		public Boolean getError() {
+			return this.Error;
 		}
 		
 //		public void insertNodeLeftRecursive (TreeNode node, TreeNode left, TreeNode right, TreeNode mid) {
@@ -153,6 +157,7 @@ public class parser {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
 						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
 						bw.newLine();
+						t.setErrorDetection(true);
 						return t;
 					}
 					catch(IOException a) {
@@ -176,6 +181,7 @@ public class parser {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
 						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
 						bw.newLine();
+						t.setErrorDetection(true);
 						return t;
 					}
 					catch(IOException a) {
@@ -200,6 +206,7 @@ public class parser {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
 						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
 						bw.newLine();
+						t.setErrorDetection(true);
 						return t;
 					}
 					catch(IOException a) {
@@ -223,6 +230,7 @@ public class parser {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
 						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
 						bw.newLine();
+						t.setErrorDetection(true);
 						return t;
 					}
 					catch(IOException a) {
@@ -346,32 +354,49 @@ public class parser {
 //		
 //	}
 	
+	//PLEASE DEAR GOD ERASE THIS IF IT DOESN'T WORK
+	public static void checkError(TreeNode node) {
+		if (node.getError() == true) {
+			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
+			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
+		}
+		else if ((node.getLeftChild() != null || node.getRightChild() != null) && (node.getLeftChild().getError() == true || node.getRightChild().getError() == true)) {
+			node.setErrorDetection(true);
+		}
+		
+		if (node.getLeftChild() != null) checkError(node.getLeftChild());
+		if (node.getRightChild() != null) checkError(node.getRightChild());
+	}
 	
-	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException, NullPointerException {
+	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException {
 //		System.out.println(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-		try {
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-				
-				if ((node.getLeftChild() == null || node.getRightChild() == null) && node.getDataToken().getType() == TokenType.SYMBOL) {
-					bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-					bw.newLine();
-					bw.write("error");
-					bw.newLine();
-				}
-				else {
-					for (int i = 0; i < numTabs; i++) {
-						bw.write("\t");
-					}
-					
-					bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-					bw.newLine();
-				}
+		//I don't think we need to check error here anymore since we're already checking error at each of the parsing functions
+		//but also according to Sepehr, we don't need to print which token specifically causes error - just print an error message and escape
+		//and also if there's an error we don't need to print tree - and according to Sepehr we should check for error (index != size(tokens))
+		//in main...
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
+		checkError(node);
+		if (node.getError()) {
+			bw.write("error");
+//			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
+//			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
+			//this would set every other node's error to true, which is cool, but
+			//for problems where the error node is not at the root node (like 3 + 4 - + 5), it doesn't work
+			// --> how can I access the node before?? 
+			// maybe create a separate void recursive function, keep calling it recursively and checking
+			// to see if a node's children are error - if reach a error child node, set the node to error
+			bw.close();
+		}
+		else {
+			for (int i = 0; i < numTabs; i++) {
+				bw.write("\t");
 			}
+				
+			bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+			bw.newLine();
+			bw.close();
 			if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
 			if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
-		}
-		catch(NullPointerException e) {
-			e.getStackTrace();
 		}
 	}
 	
@@ -411,7 +436,7 @@ public class parser {
 //			System.out.println(node.getDataToken().getValue());
 //			System.out.println(node.getLeftChild().getDataToken().getValue());
 //			System.out.println(node.getRightChild().getDataToken().getValue());
-			writeAST(node, outputFile, numTab);
+			if (node.getError() == false) writeAST(node, outputFile, numTab);
 		}
 	}
 }
