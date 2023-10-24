@@ -377,7 +377,7 @@ public class parser {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
 		checkError(node);
 		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) {
-			bw.write("error");
+			bw.write("error: incorrect syntax");
 //			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
 //			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
 			//this would set every other node's error to true, which is cool, but
