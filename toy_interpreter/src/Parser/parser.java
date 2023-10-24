@@ -155,8 +155,8 @@ public class parser {
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-						bw.newLine();
+//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+//						bw.newLine();
 						t.setErrorDetection(true);
 						return t;
 					}
@@ -179,8 +179,8 @@ public class parser {
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-						bw.newLine();
+//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+//						bw.newLine();
 						t.setErrorDetection(true);
 						return t;
 					}
@@ -204,8 +204,8 @@ public class parser {
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-						bw.newLine();
+//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+//						bw.newLine();
 						t.setErrorDetection(true);
 						return t;
 					}
@@ -228,8 +228,8 @@ public class parser {
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-						bw.newLine();
+//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
+//						bw.newLine();
 						t.setErrorDetection(true);
 						return t;
 					}
@@ -254,7 +254,7 @@ public class parser {
 				else {
 					//i guess in execution we don't print error here,
 					//but we print error when we're actually iterating and printing the tree
-					System.out.println("erorr"); 
+//					System.out.println("erorr"); 
 					return null;
 				}
 			}
@@ -373,10 +373,10 @@ public class parser {
 		//I don't think we need to check error here anymore since we're already checking error at each of the parsing functions
 		//but also according to Sepehr, we don't need to print which token specifically causes error - just print an error message and escape
 		//and also if there's an error we don't need to print tree - and according to Sepehr we should check for error (index != size(tokens))
-		//in main...
+		//in main...+
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
 		checkError(node);
-		if (node.getError()) {
+		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) {
 			bw.write("error");
 //			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
 //			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
@@ -436,7 +436,7 @@ public class parser {
 //			System.out.println(node.getDataToken().getValue());
 //			System.out.println(node.getLeftChild().getDataToken().getValue());
 //			System.out.println(node.getRightChild().getDataToken().getValue());
-			if (node.getError() == false) writeAST(node, outputFile, numTab);
+			writeAST(node, outputFile, numTab);
 		}
 	}
 }
