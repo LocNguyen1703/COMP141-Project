@@ -2,7 +2,8 @@
 names: Loc Nguyen, Phuoc Nguyen
 Project Phase 2.1 (PR2.1): Parser for expressions
 */
-package Parser;
+
+package parserPhase2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,13 +11,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+
+import Parser.parser.TreeNode;
 import scannerPhase2.ScannerPhase2;
 import scannerPhase2.ScannerPhase2.Token;
 import scannerPhase2.ScannerPhase2.TokenType;
 
-public class parser {
-	
-	public parser() {
+public class ParserPhase2 {
+
+	public ParserPhase2() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -108,8 +111,77 @@ public class parser {
 		//we dont set parameter as List<List<Tokens>> but instead List<Tokens> --> this way the function 
 		// is simpler - it's only trying to parse 1 line at a time
 		
+		public TreeNode parseStatement(List<Token> tokens, int numTabs) {
+			TreeNode t = parseBaseStatement(tokens, numTabs);
+			while (next_token.getValue().equals(";")) {
+				Token temp = next_token;
+				Token e = consumeToken(tokens);
+				t = new TreeNode(temp, e, t, null, parseBaseStatement(tokens, numTabs + 1), numTabs + 1);
+				
+				if (t.getLeftChild() == null || t.getRightChild() == null) {
+					t.setErrorDetection(true);
+					return t;
+				}
+			}
+			return t;
+		}
+		
+		public TreeNode parseBaseStatement(List<Token> tokens, int numTabs) {
+			if (next_token.getValue().equals("(")) {
+				consumeToken(tokens);
+				TreeNode t = parseExpr(tokens, numTabs + 1);
+				if (next_token.getValue().equals(")")) {
+					consumeToken(tokens);
+					return t;
+				}
+				else {
+					return null;
+				}
+			}
+			
+			else if (next_token.getType() == TokenType.IDENTIFIER) {
+				Token temp = next_token; 
+				Token e = consumeToken(tokens);
+				return new TreeNode (temp, e);
+			}
+			
+			else if (next_token.getType() == TokenType.NUMBER) {
+				Token temp = next_token; 
+				Token e =consumeToken(tokens);
+				return new TreeNode (temp, e);
+			}
+			
+			//if none of the if-statements work --> we return null --> when we iterate and print Tree we print error there and stop
+			return null;
+		}
+		
+		public TreeNode parseAssignment(List<Token> tokens, int numTabs) {
+			if (next_token.getType() != TokenType.IDENTIFIER) return null; 
+			Token id = next_token; //this should be the equal sign
+			Token e = consumeToken(tokens); //this should be the expression
+				
+			if (next_token.getValue() != ":=") return null;
+			Token t = consumeToken(tokens); 
+//			TreeNode t = new TreeNode (, t)
+			
+			return null; 
+		}
+		
+		public TreeNode parseIfStatement(List<Token> tokens, int numTabs) {
+			if (next_token.getValue() == "if") {
+				
+			}
+			
+			return null;
+		}
+		
+		public TreeNode parseWhileStatement(List<Token> tokens, int numTabs) {
+			return null;
+		}
+		
 		//Addition
 		public TreeNode parseExpr(List<Token> tokens, int numTabs) {
+			
 			TreeNode t = parseTerm(tokens, numTabs + 1);
 			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
 			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
@@ -300,4 +372,5 @@ public class parser {
 			writeAST(node, outputFile, numTab);
 		}
 	}
+	
 }
