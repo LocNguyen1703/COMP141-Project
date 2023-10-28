@@ -109,9 +109,9 @@ public class parser {
 		// is simpler - it's only trying to parse 1 line at a time
 		
 		//Addition
-		public TreeNode parseExpr(List<Token> tokens, int numTabs, String outputFile) {
+		public TreeNode parseExpr(List<Token> tokens, int numTabs) {
 			
-			TreeNode t = parseTerm(tokens, numTabs + 1, outputFile);
+			TreeNode t = parseTerm(tokens, numTabs + 1);
 			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
 			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
 			//it jumped out of while loop and returned...
@@ -138,7 +138,7 @@ public class parser {
 //					}
 //				}
 				
-				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1, outputFile), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -149,12 +149,12 @@ public class parser {
 		}
 
 		//Subtraction
-		public TreeNode parseTerm(List<Token> tokens, int numTabs, String outputFile) {
-			TreeNode t = parseFactor(tokens, numTabs + 1, outputFile);
+		public TreeNode parseTerm(List<Token> tokens, int numTabs) {
+			TreeNode t = parseFactor(tokens, numTabs + 1);
 			while (next_token.getValue().equals("-")) {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parseFactor(tokens, numTabs + 1, outputFile), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -165,12 +165,12 @@ public class parser {
 		}
 		
 		//Division
-		public TreeNode parseFactor(List<Token> tokens, int numTabs, String outputFile) { 
-			TreeNode t = parsePiece(tokens, numTabs + 1, outputFile);
+		public TreeNode parseFactor(List<Token> tokens, int numTabs) { 
+			TreeNode t = parsePiece(tokens, numTabs + 1);
 			while (next_token.getValue().equals("/")) {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parsePiece(tokens, numTabs + 1, outputFile), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parsePiece(tokens, numTabs + 1), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -181,12 +181,12 @@ public class parser {
 		}
 		
 		//Multiplication
-		public TreeNode parsePiece(List<Token> tokens, int numTabs, String outputFile) {
-			TreeNode t = parseElement(tokens, numTabs + 1, outputFile);
+		public TreeNode parsePiece(List<Token> tokens, int numTabs) {
+			TreeNode t = parseElement(tokens, numTabs + 1);
 			while (next_token.getValue().equals("*")) {
 				Token temp = next_token;
 				Token e =consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parseElement(tokens, numTabs + 1, outputFile), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -197,10 +197,10 @@ public class parser {
 		}
 		
 		//parentheses or Number/Identifier
-		public TreeNode parseElement(List<Token> tokens, int numTabs, String outputFile) {
+		public TreeNode parseElement(List<Token> tokens, int numTabs) {
 			if (next_token.getValue().equals("(")) {
 				consumeToken(tokens);
-				TreeNode t = parseExpr(tokens, numTabs + 1, outputFile);
+				TreeNode t = parseExpr(tokens, numTabs + 1);
 				if (next_token.getValue().equals(")")) {
 					consumeToken(tokens);
 					return t;
@@ -298,7 +298,7 @@ public class parser {
 		int numTab = 0;
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0), i.get(0));
-			node = node.parseExpr(i, 0, outputFile);
+			node = node.parseExpr(i, 0);
 			writeAST(node, outputFile, numTab);
 		}
 	}
