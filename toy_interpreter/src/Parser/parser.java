@@ -108,6 +108,39 @@ public class parser {
 		//we dont set parameter as List<List<Tokens>> but instead List<Tokens> --> this way the function 
 		// is simpler - it's only trying to parse 1 line at a time
 		
+		public TreeNode parseStatement(List<Token> tokens, int numTabs) {
+			TreeNode t = parseBaseStatement(tokens, numTabs);
+			while (next_token.getValue().equals(";")) {
+				Token temp = next_token;
+				Token e = consumeToken(tokens);
+				t = new TreeNode(temp, e, t, null, parseBaseStatement(tokens, numTabs + 1), numTabs + 1);
+				
+				if (t.getLeftChild() == null || t.getRightChild() == null) {
+					t.setErrorDetection(true);
+					return t;
+				}
+			}
+			return t;
+		}
+		
+		public TreeNode parseBaseStatement(List<Token> tokens, int numTabs) {
+			TreeNode t = parseAssignment(tokens, numTabs);
+			
+			return t;
+		}
+		
+		public TreeNode parseAssignment(List<Token> tokens, int numTabs) {
+			return null;
+		}
+		
+		public TreeNode parseIfStatement(List<Token> tokens, int numTabs) {
+			return null;
+		}
+		
+		public TreeNode parseWhileStatement(List<Token> tokens, int numTabs) {
+			return null;
+		}
+		
 		//Addition
 		public TreeNode parseExpr(List<Token> tokens, int numTabs) {
 			
@@ -225,7 +258,6 @@ public class parser {
 			//if none of the if-statements work --> we return null --> when we iterate and print Tree we print error there and stop
 			return null;
 		}
-		
 	}
 	
 	public static void checkError(TreeNode node) {
