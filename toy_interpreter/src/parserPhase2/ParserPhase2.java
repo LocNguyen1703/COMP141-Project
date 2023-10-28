@@ -157,14 +157,16 @@ public class ParserPhase2 {
 		
 		public TreeNode parseAssignment(List<Token> tokens, int numTabs) {
 			if (next_token.getType() != TokenType.IDENTIFIER) return null; 
-			Token id = next_token; //this should be the equal sign
-			Token e = consumeToken(tokens); //this should be the expression
-				
+			Token id = next_token; //this should be the identifier
+			Token equal = consumeToken(tokens); //this should be the equal sign
 			if (next_token.getValue() != ":=") return null;
-			Token t = consumeToken(tokens); 
-//			TreeNode t = new TreeNode (, t)
+			TreeNode ID = new TreeNode (id, equal);
 			
-			return null; 
+			Token e = consumeToken(tokens); // this should be the expression
+//			TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs) 
+			TreeNode t = new TreeNode (equal, e, ID, null, parseExpr(tokens, numTabs+1), numTabs+1);
+			
+			return t; 
 		}
 		
 		public TreeNode parseIfStatement(List<Token> tokens, int numTabs) {
@@ -368,7 +370,7 @@ public class ParserPhase2 {
 		int numTab = 0;
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0), i.get(0));
-			node = node.parseExpr(i, 0);
+			node = node.parseAssignment(i, 0);
 			writeAST(node, outputFile, numTab);
 		}
 	}

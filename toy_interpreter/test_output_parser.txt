@@ -1,10 +1,13 @@
-Line: 3 + 4 - + 5 
+Line: 3 + 4 + y 
 3: NUMBER
 +: SYMBOL
 4: NUMBER
--: SYMBOL
 +: SYMBOL
-5: NUMBER
+y: IDENTIFIER
 
 AST:
-error: incorrect syntax
++: SYMBOL
+	+: SYMBOL
+		3: NUMBER
+		4: NUMBER
+	y: IDENTIFIER
