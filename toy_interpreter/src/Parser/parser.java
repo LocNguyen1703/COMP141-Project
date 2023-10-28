@@ -95,10 +95,6 @@ public class parser {
 			return this.Error;
 		}
 		
-//		public void insertNodeLeftRecursive (TreeNode node, TreeNode left, TreeNode right, TreeNode mid) {
-//			
-//		}
-		
 		public Token consumeToken(List<Token> tokens) {
 			if (index+1 < tokens.size()) {
 				index ++; 
@@ -109,19 +105,11 @@ public class parser {
 			
 		}
 		
-		public Token findToken(List<Token> tokens, String value) {
-			for (Token t : tokens){
-				if (t.getValue() == value) return t;
-			}
-			return null;
-		}
-		
-		// I guess we dont set parameter as List<List<Tokens>> but instead List<Tokens> --> this way the function 
+		//we dont set parameter as List<List<Tokens>> but instead List<Tokens> --> this way the function 
 		// is simpler - it's only trying to parse 1 line at a time
 		
 		//Addition
 		public TreeNode parseExpr(List<Token> tokens, int numTabs, String outputFile) {
-//			Token e = findToken(tokens, "+");
 			
 			TreeNode t = parseTerm(tokens, numTabs + 1, outputFile);
 			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
@@ -138,7 +126,6 @@ public class parser {
 				
 				//this if statement is to check whether consumeToken returns the same next_token
 				//if (temp == e) return new TreeNode(temp, e, t, null, null, numTabs + 1);
-
 				
 //				if ((t.getLeftChild() == null || t.getRightChild() == null) && t.getDataToken().getType() == TokenType.SYMBOL) {
 //					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
@@ -154,17 +141,9 @@ public class parser {
 				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1, outputFile), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
-					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-//						bw.newLine();
-						t.setErrorDetection(true);
-						return t;
-					}
-					catch(IOException a) {
-						a.printStackTrace();
-					}
+					t.setErrorDetection(true);
+					return t;
 				}
-			
 			}
 			return t;
 		}
@@ -178,20 +157,11 @@ public class parser {
 				t = new TreeNode(temp, e, t, null, parseFactor(tokens, numTabs + 1, outputFile), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
-					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-//						bw.newLine();
-						t.setErrorDetection(true);
-						return t;
-					}
-					catch(IOException a) {
-						a.printStackTrace();
-					}
+					t.setErrorDetection(true);
+					return t;
 				}
 			}
-			
 			return t;
-			
 		}
 		
 		//Division
@@ -203,18 +173,10 @@ public class parser {
 				t = new TreeNode(temp, e, t, null, parsePiece(tokens, numTabs + 1, outputFile), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
-					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-//						bw.newLine();
-						t.setErrorDetection(true);
-						return t;
-					}
-					catch(IOException a) {
-						a.printStackTrace();
-					}
+					t.setErrorDetection(true);
+					return t;
 				}
 			}
-			
 			return t;
 		}
 		
@@ -227,18 +189,10 @@ public class parser {
 				t = new TreeNode(temp, e, t, null, parseElement(tokens, numTabs + 1, outputFile), numTabs + 1);
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
-					try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true))) {
-//						bw.write("error at " + t.getDataToken().getValue() + ": " + t.getDataToken().getType());
-//						bw.newLine();
-						t.setErrorDetection(true);
-						return t;
-					}
-					catch(IOException a) {
-						a.printStackTrace();
-					}
+					t.setErrorDetection(true);
+					return t;
 				}
 			}
-			
 			return t;
 		}
 		
@@ -252,9 +206,6 @@ public class parser {
 					return t;
 				}
 				else {
-					//i guess in execution we don't print error here,
-					//but we print error when we're actually iterating and printing the tree
-//					System.out.println("erorr"); 
 					return null;
 				}
 			}
@@ -276,85 +227,7 @@ public class parser {
 		}
 		
 	}
-
-//	public class Tree extends TreeNode{
-//		public TreeNode root;
-//		public Token next_token;
-//		public int index;
-//		
-//		public Tree(TreeNode root, Token next_token, int index) {
-//			super(next_token); //must call superclass constructor first before keep running child class constructor
-//			this.root = root;
-//			this.next_token = next_token;
-//			this.index = index;
-//		}
-//		
-//		//we're doing left-recursive here so --> token is root node, t is left, tree is right
-//		public Tree createTree(Token token, Tree t, TreeNode mid, Tree tree) {
-//			return null;
-//			/*
-//			 idea: take a loook at list of tokens --> find the operators first
-//			 each operator token should be in-between numbers/identifiers --> if not, throw error & exit 
-//			 create nodes based on operators and left/right branches based on the numbers/identifiers they're in-between (and order of precedence)
-//			 */	
-//			
-//			
-//		}
-//		
-//		//in theory, moves pointer of currenct_token to next token in token list
-//		//in here, we just assign next_token to item of whatever index "index" integer is in token list 
-//		public void consumeToken(List<Token> tokens) {
-//			next_token = tokens.get(index);
-//			index ++; 
-//		}
-//		
-//		public Token findToken(List<Token> tokens, String value) {
-//			for (Token t : tokens){
-//				if (t.getValue() == value) return t;
-//			}
-//			return null;
-//		}
-//		
-//		// I guess we dont set parameter as List<List<Tokens>> but instead List<Tokens> --> this way the function 
-//		// is simpler - it's only trying to parse 1 line at a time
-//		
-//		//Addition
-//		public Tree parseExpr(List<Token> tokens) {
-////			Token e = findToken(tokens, "+");
-//			Tree t = parseTerm(tokens);
-//			while (next_token.getValue() == "+") {
-//				consumeToken(tokens);
-//				t = createTree(next_token, t, null, parseTerm(tokens));
-//			}
-//			
-//			return t;
-//		}
-//
-//		//Subtraction
-//		public Tree parseTerm(List<Token> tokens) {
-//			return null;
-//			
-//		}
-//		
-//		//Division
-//		public Tree parseFactor(List<Token> tokens) { 
-//			return null;
-//		}
-//		
-//		
-//		//Multiplication
-//		public Tree parsePiece(List<Token> tokens) {
-//			return null;
-//		}
-//		
-//		//parentheses or Number/Identifier
-//		public Tree parseElement(List<Token> tokens) {
-//			return null;
-//		}
-//		
-//	}
 	
-	//PLEASE DEAR GOD ERASE THIS IF IT DOESN'T WORK
 	public static void checkError(TreeNode node) {
 		if (node.getError() == true) {
 			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
@@ -369,11 +242,6 @@ public class parser {
 	}
 	
 	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException {
-//		System.out.println(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-		//I don't think we need to check error here anymore since we're already checking error at each of the parsing functions
-		//but also according to Sepehr, we don't need to print which token specifically causes error - just print an error message and escape
-		//and also if there's an error we don't need to print tree - and according to Sepehr we should check for error (index != size(tokens))
-		//in main...+
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
 		checkError(node);
 		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) {
@@ -426,16 +294,11 @@ public class parser {
 		String outputFile = args[1];
 		
 		List<List<Token>> tokens = ScannerPhase2.tokenizeFile(inputFile);
-//		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
 		writeTokens(tokens, inputFile, outputFile);
 		int numTab = 0;
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0), i.get(0));
-//			System.out.println(node.getDataToken().getValue());
 			node = node.parseExpr(i, 0, outputFile);
-//			System.out.println(node.getDataToken().getValue());
-//			System.out.println(node.getLeftChild().getDataToken().getValue());
-//			System.out.println(node.getRightChild().getDataToken().getValue());
 			writeAST(node, outputFile, numTab);
 		}
 	}
