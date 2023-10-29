@@ -1,26 +1,27 @@
-Line: if y - x then t := 5 else z := 7 endif
-if: KEYWORD
-y: IDENTIFIER
--: SYMBOL
+Line: while x + y do
+while: KEYWORD
 x: IDENTIFIER
-then: KEYWORD
-t: IDENTIFIER
-:=: SYMBOL
++: SYMBOL
+y: IDENTIFIER
+do: KEYWORD
+
+Line: 	x + 3 + 5;
+x: IDENTIFIER
++: SYMBOL
+3: NUMBER
++: SYMBOL
 5: NUMBER
-else: KEYWORD
-z: IDENTIFIER
+;: SYMBOL
+
+Line: 	y := x - 1
+y: IDENTIFIER
 :=: SYMBOL
-7: NUMBER
-endif: KEYWORD
+x: IDENTIFIER
+-: SYMBOL
+1: NUMBER
+
+Line: endwhile
+endwhile: KEYWORD
 
 AST:
-if: KEYWORD
-	-: SYMBOL
-		y: IDENTIFIER
-		x: IDENTIFIER
-	:=: SYMBOL
-		t: IDENTIFIER
-		5: NUMBER
-	:=: SYMBOL
-		z: IDENTIFIER
-		7: NUMBER
+error: incorrect syntax

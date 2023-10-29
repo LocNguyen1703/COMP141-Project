@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import Parser.parser.TreeNode;
@@ -197,7 +198,7 @@ public class ParserPhase2 {
 				 if (next_token.getValue().equals("do")) {
 					 Token Do = next_token;
 					 Token temp2 = consumeToken(tokens);
-					 TreeNode t2 = parseExpr(tokens, numTabs+1);
+					 TreeNode t2 = parseStatement(tokens, numTabs+1);
 					 if (next_token.getValue().equals("endwhile")) {
 						 Token Endwhile = next_token;
 						 Token temp3 = consumeToken(tokens);
@@ -403,10 +404,22 @@ public class ParserPhase2 {
 		List<List<Token>> tokens = ScannerPhase2.tokenizeFile(inputFile);
 		writeTokens(tokens, inputFile, outputFile);
 		int numTab = 0;
+		List<Token> tokens1 = new ArrayList<>();
+//		for (List<Token> i : tokens) {
+//			TreeNode node = new TreeNode(i.get(0), i.get(0));
+//			node = node.parseBaseStatement(i, 0);
+//			writeAST(node, outputFile, numTab);
+//		}
 		for (List<Token> i : tokens) {
-			TreeNode node = new TreeNode(i.get(0), i.get(0));
-			node = node.parseBaseStatement(i, 0);
-			writeAST(node, outputFile, numTab);
-		}		
+			for (Token j : i) {
+				tokens1.add(j);
+			}
+		}
+		
+		TreeNode node = new TreeNode(tokens1.get(0), tokens1.get(0));
+		node = node.parseBaseStatement(tokens1, 0);
+		writeAST(node, outputFile, numTab);
+
+			
 	}
 }

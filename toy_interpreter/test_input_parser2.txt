@@ -1,1 +1,4 @@
-if y - x then t := 5 else z := 7 endif
+while x + y do
+	x := 5;
+	y := x - 1
+endwhile
