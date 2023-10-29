@@ -190,6 +190,22 @@ public class ParserPhase2 {
 		}
 		
 		public TreeNode parseWhileStatement(List<Token> tokens, int numTabs) {
+			if (next_token.getValue().equals("while")) {
+				 Token While = next_token;
+				 Token temp1 = consumeToken(tokens);
+				 TreeNode t1 = parseExpr(tokens, numTabs+1);
+				 if (next_token.getValue().equals("do")) {
+					 Token Do = next_token;
+					 Token temp2 = consumeToken(tokens);
+					 TreeNode t2 = parseExpr(tokens, numTabs+1);
+					 if (next_token.getValue().equals("endwhile")) {
+						 Token Endwhile = next_token;
+						 Token temp3 = consumeToken(tokens);
+						 return new TreeNode(While, temp3, t1, null, t2, numTabs + 1);
+					 }
+				 }
+			}
+			
 			return null;
 		}
 		
@@ -327,29 +343,35 @@ public class ParserPhase2 {
 	
 	public static void writeAST(TreeNode node, String outputFile, int numTabs) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
-		checkError(node);
-		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) {
+		if (node == null) {
 			bw.write("error: incorrect syntax");
-//			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
-//			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
-			//this would set every other node's error to true, which is cool, but
-			//for problems where the error node is not at the root node (like 3 + 4 - + 5), it doesn't work
-			// --> how can I access the node before?? 
-			// maybe create a separate void recursive function, keep calling it recursively and checking
-			// to see if a node's children are error - if reach a error child node, set the node to error
 			bw.close();
 		}
 		else {
-			for (int i = 0; i < numTabs; i++) {
-				bw.write("\t");
+			checkError(node);
+			if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) {
+				bw.write("error: incorrect syntax");
+	//			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
+	//			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
+				//this would set every other node's error to true, which is cool, but
+				//for problems where the error node is not at the root node (like 3 + 4 - + 5), it doesn't work
+				// --> how can I access the node before?? 
+				// maybe create a separate void recursive function, keep calling it recursively and checking
+				// to see if a node's children are error - if reach a error child node, set the node to error
+				bw.close();
 			}
-				
-			bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
-			bw.newLine();
-			bw.close();
-			if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
-			if (node.getMidChild() != null) writeAST(node.getMidChild(), outputFile, numTabs+1);
-			if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
+			else {
+				for (int i = 0; i < numTabs; i++) {
+					bw.write("\t");
+				}
+					
+				bw.write(node.getDataToken().getValue() + ": " + node.getDataToken().getType());
+				bw.newLine();
+				bw.close();
+				if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
+				if (node.getMidChild() != null) writeAST(node.getMidChild(), outputFile, numTabs+1);
+				if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
+			}
 		}
 	}
 	

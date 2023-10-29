@@ -1,1 +1,1 @@
-if y - x then z := 5 else z := 7 endif
+if y - x then t := 5 else z := 7 endif

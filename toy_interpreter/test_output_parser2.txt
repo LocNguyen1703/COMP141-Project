@@ -1,10 +1,10 @@
-Line: if y - x then z := 5 else z := 7 endif
+Line: if y - x then t := 5 else z := 7 endif
 if: KEYWORD
 y: IDENTIFIER
 -: SYMBOL
 x: IDENTIFIER
 then: KEYWORD
-z: IDENTIFIER
+t: IDENTIFIER
 :=: SYMBOL
 5: NUMBER
 else: KEYWORD
@@ -19,7 +19,7 @@ if: KEYWORD
 		y: IDENTIFIER
 		x: IDENTIFIER
 	:=: SYMBOL
-		z: IDENTIFIER
+		t: IDENTIFIER
 		5: NUMBER
 	:=: SYMBOL
 		z: IDENTIFIER
