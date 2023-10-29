@@ -4,5 +4,4 @@ if z then
 	endwhile
 else 
 	x := 7
-endif; 
-y:=1
+endif

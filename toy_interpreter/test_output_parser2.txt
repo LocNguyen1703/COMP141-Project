@@ -26,29 +26,19 @@ x: IDENTIFIER
 :=: SYMBOL
 7: NUMBER
 
-Line: endif; 
+Line: endif
 endif: KEYWORD
-;: SYMBOL
-
-Line: y:=1
-y: IDENTIFIER
-:=: SYMBOL
-1: NUMBER
 
 AST:
-;: SYMBOL
-	if: KEYWORD
-		z: IDENTIFIER
-		while: KEYWORD
-			-: SYMBOL
-				*: SYMBOL
-					x: IDENTIFIER
-					4: NUMBER
-				2: NUMBER
-			skip: KEYWORD
-		:=: SYMBOL
-			x: IDENTIFIER
-			7: NUMBER
+if: KEYWORD
+	z: IDENTIFIER
+	while: KEYWORD
+		-: SYMBOL
+			*: SYMBOL
+				x: IDENTIFIER
+				4: NUMBER
+			2: NUMBER
+		skip: KEYWORD
 	:=: SYMBOL
-		y: IDENTIFIER
-		1: NUMBER
+		x: IDENTIFIER
+		7: NUMBER
