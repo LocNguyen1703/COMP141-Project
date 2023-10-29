@@ -127,28 +127,23 @@ public class ParserPhase2 {
 		}
 		
 		public TreeNode parseBaseStatement(List<Token> tokens, int numTabs) {
-			if (next_token.getValue().equals("(")) {
-				consumeToken(tokens);
-				TreeNode t = parseExpr(tokens, numTabs + 1);
-				if (next_token.getValue().equals(")")) {
-					consumeToken(tokens);
-					return t;
-				}
-				else {
-					return null;
-				}
+			if (next_token.getType() == TokenType.IDENTIFIER) {
+				TreeNode t = parseAssignment(tokens, numTabs + 1);
+				return t;
 			}
 			
-			else if (next_token.getType() == TokenType.IDENTIFIER) {
-				Token temp = next_token; 
-				Token e = consumeToken(tokens);
-				return new TreeNode (temp, e);
+			else if (next_token.getValue().equals("if")) {
+				TreeNode t = parseIfStatement(tokens, numTabs + 1);
+				return t;
 			}
 			
-			else if (next_token.getType() == TokenType.NUMBER) {
-				Token temp = next_token; 
-				Token e =consumeToken(tokens);
-				return new TreeNode (temp, e);
+			else if (next_token.getValue().equals("while")) {
+				TreeNode t = parseWhileStatement(tokens, numTabs + 1);
+				return t;
+			}
+			
+			else if (next_token.getValue().equals("skip")) {
+				return new TreeNode(next_token, next_token);
 			}
 			
 			//if none of the if-statements work --> we return null --> when we iterate and print Tree we print error there and stop
@@ -170,7 +165,21 @@ public class ParserPhase2 {
 		
 		public TreeNode parseIfStatement(List<Token> tokens, int numTabs) {
 			if (next_token.getValue() == "if") {
-				
+				Token IF = consumeToken(tokens);
+				TreeNode t1 = parseExpr(tokens, numTabs+1);
+				if (next_token.getValue().equals("then")) {
+					Token then = consumeToken(tokens); 
+					TreeNode t2 = parseStatement(tokens, numTabs+1); //we don't even need numTabs --> get rid of it later 
+					if (next_token.getValue().equals("else")) {
+						Token Else = consumeToken(tokens);
+						TreeNode t3 = parseStatement(tokens, numTabs+1);
+						if (next_token.getValue().equals("endif")) {
+							Token endif = consumeToken(tokens);
+//							TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs)
+							return new TreeNode(IF, endif, t1, t2, t3, numTabs + 1);
+						}
+					}
+				}
 			}
 			
 			return null;
