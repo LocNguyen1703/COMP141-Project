@@ -164,19 +164,23 @@ public class ParserPhase2 {
 		}
 		
 		public TreeNode parseIfStatement(List<Token> tokens, int numTabs) {
-			if (next_token.getValue() == "if") {
-				Token IF = consumeToken(tokens);
+			if (next_token.getValue().equals( "if")) {
+				Token IF = next_token;
+				Token temp = consumeToken(tokens);
 				TreeNode t1 = parseExpr(tokens, numTabs+1);
 				if (next_token.getValue().equals("then")) {
-					Token then = consumeToken(tokens); 
+					Token then = next_token; 
+					Token temp2 = consumeToken(tokens); 
 					TreeNode t2 = parseStatement(tokens, numTabs+1); //we don't even need numTabs --> get rid of it later 
 					if (next_token.getValue().equals("else")) {
-						Token Else = consumeToken(tokens);
+						Token Else = next_token; 
+						Token temp3 = consumeToken(tokens);
 						TreeNode t3 = parseStatement(tokens, numTabs+1);
 						if (next_token.getValue().equals("endif")) {
-							Token endif = consumeToken(tokens);
+							Token endif = next_token; 
+							Token temp4 = consumeToken(tokens);
 //							TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs)
-							return new TreeNode(IF, endif, t1, t2, t3, numTabs + 1);
+							return new TreeNode(IF, temp4, t1, t2, t3, numTabs + 1);
 						}
 					}
 				}
@@ -344,6 +348,7 @@ public class ParserPhase2 {
 			bw.newLine();
 			bw.close();
 			if (node.getLeftChild() != null) writeAST(node.getLeftChild(), outputFile, numTabs+1);
+			if (node.getMidChild() != null) writeAST(node.getMidChild(), outputFile, numTabs+1);
 			if (node.getRightChild() != null) writeAST(node.getRightChild(), outputFile, numTabs+1);
 		}
 	}
@@ -378,7 +383,7 @@ public class ParserPhase2 {
 		int numTab = 0;
 		for (List<Token> i : tokens) {
 			TreeNode node = new TreeNode(i.get(0), i.get(0));
-			node = node.parseAssignment(i, 0);
+			node = node.parseBaseStatement(i, 0);
 			writeAST(node, outputFile, numTab);
 		}		
 	}

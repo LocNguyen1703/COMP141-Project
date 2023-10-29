@@ -1,1 +1,1 @@
-y := 0
+if y - x then z := 5 else z := 7 endif
