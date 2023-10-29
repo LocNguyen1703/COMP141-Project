@@ -33,12 +33,11 @@ x: IDENTIFIER
 13: NUMBER
 ;: SYMBOL
 
-Line: 	y := x + 7
+Line: 	y := x + 
 y: IDENTIFIER
 :=: SYMBOL
 x: IDENTIFIER
 +: SYMBOL
-7: NUMBER
 
 Line: endwhile
 endwhile: KEYWORD
@@ -56,18 +55,4 @@ AST:
 		:=: SYMBOL
 			t: IDENTIFIER
 			1927: NUMBER
-	while: KEYWORD
-		-: SYMBOL
-			x: IDENTIFIER
-			y: IDENTIFIER
-		;: SYMBOL
-			:=: SYMBOL
-				x: IDENTIFIER
-				+: SYMBOL
-					5: NUMBER
-					13: NUMBER
-			:=: SYMBOL
-				y: IDENTIFIER
-				+: SYMBOL
-					x: IDENTIFIER
-					7: NUMBER
+error: incorrect syntax

@@ -4,5 +4,5 @@ t := 1927;
 
 while x - y do
 	x := 5 + 13;
-	y := x + 7
+	y := x + 
 endwhile

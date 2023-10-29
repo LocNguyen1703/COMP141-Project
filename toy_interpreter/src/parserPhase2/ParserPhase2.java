@@ -332,13 +332,15 @@ public class ParserPhase2 {
 	public static void checkError(TreeNode node) {
 		if (node.getError() == true) {
 			if (node.getLeftChild() != null) node.getLeftChild().setErrorDetection(true);
+			if (node.getMidChild() != null) node.getMidChild().setErrorDetection(true);
 			if (node.getRightChild() != null) node.getRightChild().setErrorDetection(true);
 		}
-		else if ((node.getLeftChild() != null || node.getRightChild() != null) && (node.getLeftChild().getError() == true || node.getRightChild().getError() == true)) {
+		else if ((node.getLeftChild() != null || node.getMidChild() != null || node.getRightChild() != null) && (node.getLeftChild().getError() == true || node.getRightChild().getError() == true)) {
 			node.setErrorDetection(true);
 		}
 		
 		if (node.getLeftChild() != null) checkError(node.getLeftChild());
+		if (node.getMidChild() != null) checkError(node.getMidChild());
 		if (node.getRightChild() != null) checkError(node.getRightChild());
 	}
 	
