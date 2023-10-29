@@ -1,58 +1,54 @@
-Line: x := 0;
-x: IDENTIFIER
-:=: SYMBOL
-0: NUMBER
-;: SYMBOL
+Line: if z then 
+if: KEYWORD
+z: IDENTIFIER
+then: KEYWORD
 
-Line: y := 10;
-y: IDENTIFIER
-:=: SYMBOL
-10: NUMBER
-;: SYMBOL
-
-Line: t := 1927;
-t: IDENTIFIER
-:=: SYMBOL
-1927: NUMBER
-;: SYMBOL
-
-Line: 
-
-Line: while x - y do
+Line: 	while x * 4 - 2 do 
 while: KEYWORD
 x: IDENTIFIER
+*: SYMBOL
+4: NUMBER
 -: SYMBOL
-y: IDENTIFIER
+2: NUMBER
 do: KEYWORD
 
-Line: 	x := 5 + 13;
+Line: 		skip
+skip: KEYWORD
+
+Line: 	endwhile
+endwhile: KEYWORD
+
+Line: else 
+else: KEYWORD
+
+Line: 	x := 7
 x: IDENTIFIER
 :=: SYMBOL
-5: NUMBER
-+: SYMBOL
-13: NUMBER
+7: NUMBER
+
+Line: endif; 
+endif: KEYWORD
 ;: SYMBOL
 
-Line: 	y := x + 
+Line: y:=1
 y: IDENTIFIER
 :=: SYMBOL
-x: IDENTIFIER
-+: SYMBOL
-
-Line: endwhile
-endwhile: KEYWORD
+1: NUMBER
 
 AST:
 ;: SYMBOL
-	;: SYMBOL
-		;: SYMBOL
-			:=: SYMBOL
-				x: IDENTIFIER
-				0: NUMBER
-			:=: SYMBOL
-				y: IDENTIFIER
-				10: NUMBER
+	if: KEYWORD
+		z: IDENTIFIER
+		while: KEYWORD
+			-: SYMBOL
+				*: SYMBOL
+					x: IDENTIFIER
+					4: NUMBER
+				2: NUMBER
+			skip: KEYWORD
 		:=: SYMBOL
-			t: IDENTIFIER
-			1927: NUMBER
-error: incorrect syntax
+			x: IDENTIFIER
+			7: NUMBER
+	:=: SYMBOL
+		y: IDENTIFIER
+		1: NUMBER

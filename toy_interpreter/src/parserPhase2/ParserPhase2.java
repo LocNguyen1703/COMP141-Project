@@ -144,7 +144,9 @@ public class ParserPhase2 {
 			}
 			
 			else if (next_token.getValue().equals("skip")) {
-				return new TreeNode(next_token, next_token);
+				Token temp = next_token;
+				Token next = consumeToken(tokens);
+				return new TreeNode(temp, next);
 			}
 			
 			//if none of the if-statements work --> we return null --> when we iterate and print Tree we print error there and stop
@@ -202,6 +204,7 @@ public class ParserPhase2 {
 					 if (next_token.getValue().equals("endwhile")) {
 						 Token Endwhile = next_token;
 						 Token temp3 = consumeToken(tokens);
+//						 TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs)
 						 return new TreeNode(While, temp3, t1, null, t2, numTabs + 1);
 					 }
 				 }

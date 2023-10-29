@@ -1,8 +1,8 @@
-x := 0;
-y := 10;
-t := 1927;
-
-while x - y do
-	x := 5 + 13;
-	y := x + 
-endwhile
+if z then 
+	while x * 4 - 2 do 
+		skip
+	endwhile
+else 
+	x := 7
+endif; 
+y:=1
