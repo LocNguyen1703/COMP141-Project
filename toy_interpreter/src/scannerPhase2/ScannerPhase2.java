@@ -40,7 +40,7 @@ public class ScannerPhase2 {
 		
 		String identifier = "([a-zA-Z])([a-zA-Z0-9])*";
 		String num = "[0-9]+";
-		String symbol = "\\+|\\-|\\*|/|\\(|\\)|\\:=|\\;";
+		String symbol = "\\+|\\-|\\*|/|\\(|\\)|\\:|\\:=|\\;";
 		String keyword = "\\b(if|then|else|endif|while|do|endwhile|skip)\\b";
 		String error = "&|#|\\.|\\,|\\]|\\[";
 		
@@ -111,6 +111,7 @@ public class ScannerPhase2 {
 							iter ++;
 							longest_substring += line.charAt(iter);
 						}
+						
 //						System.out.println(longest_substring + ": SYMBOL");
 						separated_result_tokens.add(new Token(TokenType.SYMBOL, longest_substring));
 						longest_substring = ""; 

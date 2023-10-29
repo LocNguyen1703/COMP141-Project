@@ -1,0 +1,9 @@
+Line: y := 0
+y: IDENTIFIER
+:=: SYMBOL
+0: NUMBER
+
+AST:
+:=: SYMBOL
+	y: IDENTIFIER
+	0: NUMBER
