@@ -1,27 +1,73 @@
-Line: while x + y do
+Line: x := 0;
+x: IDENTIFIER
+:=: SYMBOL
+0: NUMBER
+;: SYMBOL
+
+Line: y := 10;
+y: IDENTIFIER
+:=: SYMBOL
+10: NUMBER
+;: SYMBOL
+
+Line: t := 1927;
+t: IDENTIFIER
+:=: SYMBOL
+1927: NUMBER
+;: SYMBOL
+
+Line: 
+
+Line: while x - y do
 while: KEYWORD
 x: IDENTIFIER
-+: SYMBOL
+-: SYMBOL
 y: IDENTIFIER
 do: KEYWORD
 
-Line: 	x + 3 + 5;
+Line: 	x := 5 + 13;
 x: IDENTIFIER
-+: SYMBOL
-3: NUMBER
-+: SYMBOL
+:=: SYMBOL
 5: NUMBER
++: SYMBOL
+13: NUMBER
 ;: SYMBOL
 
-Line: 	y := x - 1
+Line: 	y := x + 7
 y: IDENTIFIER
 :=: SYMBOL
 x: IDENTIFIER
--: SYMBOL
-1: NUMBER
++: SYMBOL
+7: NUMBER
 
 Line: endwhile
 endwhile: KEYWORD
 
 AST:
-error: incorrect syntax
+;: SYMBOL
+	;: SYMBOL
+		;: SYMBOL
+			:=: SYMBOL
+				x: IDENTIFIER
+				0: NUMBER
+			:=: SYMBOL
+				y: IDENTIFIER
+				10: NUMBER
+		:=: SYMBOL
+			t: IDENTIFIER
+			1927: NUMBER
+	while: KEYWORD
+		-: SYMBOL
+			x: IDENTIFIER
+			y: IDENTIFIER
+		;: SYMBOL
+			:=: SYMBOL
+				x: IDENTIFIER
+				+: SYMBOL
+					5: NUMBER
+					13: NUMBER
+			:=: SYMBOL
+				y: IDENTIFIER
+				+: SYMBOL
+					x: IDENTIFIER
+					7: NUMBER

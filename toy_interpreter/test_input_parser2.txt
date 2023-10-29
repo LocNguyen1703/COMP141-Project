@@ -1,4 +1,8 @@
-while x + y do
-	x := 5;
-	y := x - 1
+x := 0;
+y := 10;
+t := 1927;
+
+while x - y do
+	x := 5 + 13;
+	y := x + 7
 endwhile

@@ -417,9 +417,7 @@ public class ParserPhase2 {
 		}
 		
 		TreeNode node = new TreeNode(tokens1.get(0), tokens1.get(0));
-		node = node.parseBaseStatement(tokens1, 0);
+		node = node.parseStatement(tokens1, 0);
 		writeAST(node, outputFile, numTab);
-
-			
 	}
 }
