@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import Parser.parser.TreeNode;
 import scannerPhase2.ScannerPhase2;
 import scannerPhase2.ScannerPhase2.Token;
 import scannerPhase2.ScannerPhase2.TokenType;
@@ -31,7 +30,6 @@ public class ParserPhase2 {
 		Token dataToken;
 		Token next_token; 
 		int index;
-		int numTabs;
 		Boolean Error = false;
 	
 		public TreeNode(Token token, Token next_token) {
@@ -42,13 +40,12 @@ public class ParserPhase2 {
 			this.mid = null;
 		}
 		
-		public TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs) {
+		public TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right) {
 			this.dataToken = token;
 			this.next_token = next_token;
 			this.left = left;
 			this.right = right;
 			this.mid = mid;
-			this.numTabs = numTabs;
 		}
 		
 		public void setDataToken(Token token) {
@@ -69,10 +66,6 @@ public class ParserPhase2 {
 		
 		public void setNextToken (Token token) {
 			this.next_token = token;
-		}
-		
-		public void setNumTabs (int numTabs) {
-			this.numTabs = numTabs;
 		}
 		
 		public void setErrorDetection (Boolean error) {
@@ -112,12 +105,12 @@ public class ParserPhase2 {
 		//we dont set parameter as List<List<Tokens>> but instead List<Tokens> --> this way the function 
 		// is simpler - it's only trying to parse 1 line at a time
 		
-		public TreeNode parseStatement(List<Token> tokens, int numTabs) {
-			TreeNode t = parseBaseStatement(tokens, numTabs);
+		public TreeNode parseStatement(List<Token> tokens) {
+			TreeNode t = parseBaseStatement(tokens);
 			while (next_token.getValue().equals(";")) {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parseBaseStatement(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseBaseStatement(tokens));
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -127,19 +120,19 @@ public class ParserPhase2 {
 			return t;
 		}
 		
-		public TreeNode parseBaseStatement(List<Token> tokens, int numTabs) {
+		public TreeNode parseBaseStatement(List<Token> tokens) {
 			if (next_token.getType() == TokenType.IDENTIFIER) {
-				TreeNode t = parseAssignment(tokens, numTabs + 1);
+				TreeNode t = parseAssignment(tokens);
 				return t;
 			}
 			
 			else if (next_token.getValue().equals("if")) {
-				TreeNode t = parseIfStatement(tokens, numTabs + 1);
+				TreeNode t = parseIfStatement(tokens);
 				return t;
 			}
 			
 			else if (next_token.getValue().equals("while")) {
-				TreeNode t = parseWhileStatement(tokens, numTabs + 1);
+				TreeNode t = parseWhileStatement(tokens);
 				return t;
 			}
 			
@@ -153,7 +146,7 @@ public class ParserPhase2 {
 			return null;
 		}
 		
-		public TreeNode parseAssignment(List<Token> tokens, int numTabs) {
+		public TreeNode parseAssignment(List<Token> tokens) {
 			if (next_token.getType() != TokenType.IDENTIFIER) return null; 
 			Token id = next_token; //this should be the identifier
 			Token equal = consumeToken(tokens); //this should be the equal sign
@@ -161,29 +154,29 @@ public class ParserPhase2 {
 			TreeNode t = new TreeNode (id, equal);
 			
 			Token e = consumeToken(tokens); // this should be the expression
-			t = new TreeNode (equal, e, t, null, parseExpr(tokens, numTabs+1), numTabs+1);
+			t = new TreeNode (equal, e, t, null, parseExpr(tokens));
 			
 			return t; 
 		}
 		
-		public TreeNode parseIfStatement(List<Token> tokens, int numTabs) {
+		public TreeNode parseIfStatement(List<Token> tokens) {
 			if (next_token.getValue().equals( "if")) {
 				Token IF = next_token;
 				Token temp = consumeToken(tokens);
-				TreeNode t1 = parseExpr(tokens, numTabs+1);
+				TreeNode t1 = parseExpr(tokens);
 				if (next_token.getValue().equals("then")) {
 					Token then = next_token; 
 					Token temp2 = consumeToken(tokens); 
-					TreeNode t2 = parseStatement(tokens, numTabs+1); //we don't even need numTabs --> get rid of it later 
+					TreeNode t2 = parseStatement(tokens); //we don't even need numTabs --> get rid of it later 
 					if (next_token.getValue().equals("else")) {
 						Token Else = next_token; 
 						Token temp3 = consumeToken(tokens);
-						TreeNode t3 = parseStatement(tokens, numTabs+1);
+						TreeNode t3 = parseStatement(tokens);
 						if (next_token.getValue().equals("endif")) {
 							Token endif = next_token; 
 							Token temp4 = consumeToken(tokens);
 //							TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs)
-							return new TreeNode(IF, temp4, t1, t2, t3, numTabs + 1);
+							return new TreeNode(IF, temp4, t1, t2, t3);
 						}
 					}
 				}
@@ -192,20 +185,20 @@ public class ParserPhase2 {
 			return null;
 		}
 		
-		public TreeNode parseWhileStatement(List<Token> tokens, int numTabs) {
+		public TreeNode parseWhileStatement(List<Token> tokens) {
 			if (next_token.getValue().equals("while")) {
 				 Token While = next_token;
 				 Token temp1 = consumeToken(tokens);
-				 TreeNode t1 = parseExpr(tokens, numTabs+1);
+				 TreeNode t1 = parseExpr(tokens);
 				 if (next_token.getValue().equals("do")) {
 					 Token Do = next_token;
 					 Token temp2 = consumeToken(tokens);
-					 TreeNode t2 = parseStatement(tokens, numTabs+1);
+					 TreeNode t2 = parseStatement(tokens);
 					 if (next_token.getValue().equals("endwhile")) {
 						 Token Endwhile = next_token;
 						 Token temp3 = consumeToken(tokens);
 //						 TreeNode(Token token, Token next_token, TreeNode left, TreeNode mid, TreeNode right, int numTabs)
-						 return new TreeNode(While, temp3, t1, null, t2, numTabs + 1);
+						 return new TreeNode(While, temp3, t1, null, t2);
 					 }
 				 }
 			}
@@ -214,9 +207,9 @@ public class ParserPhase2 {
 		}
 		
 		//Addition
-		public TreeNode parseExpr(List<Token> tokens, int numTabs) {
+		public TreeNode parseExpr(List<Token> tokens) {
 			
-			TreeNode t = parseTerm(tokens, numTabs + 1);
+			TreeNode t = parseTerm(tokens);
 			//problem (idk if it is a problem): there might be smthin wrong w/ getValue (I checked in debug
 			//console and next_token's value IS "+", but it still didn't match the while loop's condition and 
 			//it jumped out of while loop and returned...
@@ -243,7 +236,7 @@ public class ParserPhase2 {
 //					}
 //				}
 				
-				t = new TreeNode(temp, e, t, null, parseTerm(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseTerm(tokens));
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -254,12 +247,12 @@ public class ParserPhase2 {
 		}
 
 		//Subtraction
-		public TreeNode parseTerm(List<Token> tokens, int numTabs) {
-			TreeNode t = parseFactor(tokens, numTabs + 1);
+		public TreeNode parseTerm(List<Token> tokens) {
+			TreeNode t = parseFactor(tokens);
 			while (next_token.getValue().equals("-")) {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parseFactor(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseFactor(tokens));
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -270,12 +263,12 @@ public class ParserPhase2 {
 		}
 		
 		//Division
-		public TreeNode parseFactor(List<Token> tokens, int numTabs) { 
-			TreeNode t = parsePiece(tokens, numTabs + 1);
+		public TreeNode parseFactor(List<Token> tokens) { 
+			TreeNode t = parsePiece(tokens);
 			while (next_token.getValue().equals("/")) {
 				Token temp = next_token;
 				Token e = consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parsePiece(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parsePiece(tokens));
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -286,12 +279,12 @@ public class ParserPhase2 {
 		}
 		
 		//Multiplication
-		public TreeNode parsePiece(List<Token> tokens, int numTabs) {
-			TreeNode t = parseElement(tokens, numTabs + 1);
+		public TreeNode parsePiece(List<Token> tokens) {
+			TreeNode t = parseElement(tokens);
 			while (next_token.getValue().equals("*")) {
 				Token temp = next_token;
 				Token e =consumeToken(tokens);
-				t = new TreeNode(temp, e, t, null, parseElement(tokens, numTabs + 1), numTabs + 1);
+				t = new TreeNode(temp, e, t, null, parseElement(tokens));
 				
 				if (t.getLeftChild() == null || t.getRightChild() == null) {
 					t.setErrorDetection(true);
@@ -302,10 +295,10 @@ public class ParserPhase2 {
 		}
 		
 		//parentheses or Number/Identifier
-		public TreeNode parseElement(List<Token> tokens, int numTabs) {
+		public TreeNode parseElement(List<Token> tokens) {
 			if (next_token.getValue().equals("(")) {
 				consumeToken(tokens);
-				TreeNode t = parseExpr(tokens, numTabs + 1);
+				TreeNode t = parseExpr(tokens);
 				if (next_token.getValue().equals(")")) {
 					consumeToken(tokens);
 					return t;
@@ -422,7 +415,7 @@ public class ParserPhase2 {
 		}
 		
 		TreeNode node = new TreeNode(tokens1.get(0), tokens1.get(0));
-		node = node.parseStatement(tokens1, 0);
+		node = node.parseStatement(tokens1);
 		writeAST(node, outputFile, numTab);
 	}
 }
