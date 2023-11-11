@@ -38,11 +38,22 @@ public class evaluator extends ParserPhase2{
 		Token token1 = stack.peek();
 		Token token2 = stack.elementAt(stack.size()-1);
 		Token token3 = stack.elementAt(stack.size()-2);
-		Token result = 
+		String r = ""; 
+		switch (token3.getValue()) {
+			case "*": 
+				r = String.valueOf(Integer.valueOf(token1.getValue())*Integer.valueOf(token2.getValue()));
+			case "/":
+				r = String.valueOf(Integer.valueOf(token1.getValue())/Integer.valueOf(token2.getValue()));
+			case "-": 
+				r = String.valueOf(Integer.valueOf(token1.getValue())-Integer.valueOf(token2.getValue()));
+			case "+":
+				r = String.valueOf(Integer.valueOf(token1.getValue())+Integer.valueOf(token2.getValue()));
+		}
 		
 		stack.pop();
 		stack.pop();
 		stack.pop();
+		stack.push(new Token (TokenType.NUMBER, r));
 		
 		return stack;
 	}
@@ -52,7 +63,7 @@ public class evaluator extends ParserPhase2{
 		
 		//should I create a stack of Tokens or of TreeNodes??
 		stack.push(node.getDataToken());
-		
+		stack = evaluateTop3Expr (stack);
 		
 		preOrder(node.getLeftChild(), stack);
 		preOrder(node.getMidChild(), stack);
