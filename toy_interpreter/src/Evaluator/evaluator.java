@@ -17,6 +17,7 @@ import java.util.Stack;
 // functions (like push, pop, peek) that make it operate somewhat like a Stack
 
 import parserPhase2.ParserPhase2;
+import scannerPhase2.ScannerPhase2;
 import scannerPhase2.ScannerPhase2.Token;
 import scannerPhase2.ScannerPhase2.TokenType;
 
@@ -76,7 +77,28 @@ public class evaluator extends ParserPhase2{
 	
 	
 	public static void main(String[] args) throws IOException {
+		if (args.length != 2) {
+			System.err.println("Usage: java FileEvaluator <input_file> <output_file>");
+			System.exit(1);
+		}
+
+		String inputFile = args[0];
+		String outputFile = args[1];
 		
+		List<List<Token>> tokens = ScannerPhase2.tokenizeFile(inputFile);
+		writeTokens(tokens, inputFile, outputFile);
+		
+		int numTab = 0;
+		List<Token> tokens1 = new ArrayList<>();
+		for (List<Token> i : tokens) {
+			for (Token j : i) {
+				tokens1.add(j);
+			}
+		}
+		
+		TreeNode node = new TreeNode(tokens1.get(0), tokens1.get(0));
+		node = node.parseStatement(tokens1);
+		writeAST(node, outputFile, numTab);
 	}
 
 }
