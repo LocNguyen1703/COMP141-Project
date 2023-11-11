@@ -154,6 +154,7 @@ public class ParserPhase2 {
 			TreeNode t = new TreeNode (id, equal);
 			
 			Token e = consumeToken(tokens); // this should be the expression
+			
 			t = new TreeNode (equal, e, t, null, parseExpr(tokens));
 			
 			return t; 

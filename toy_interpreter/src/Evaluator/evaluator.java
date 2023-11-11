@@ -16,12 +16,12 @@ import java.util.Stack;
 // the way the Stack class works is it just extends from Vector - it just has some more 
 // functions (like push, pop, peek) that make it operate somewhat like a Stack
 
-import parserPhase2.ParserPhase2;
+import Parser.parser;
 import scannerPhase2.ScannerPhase2;
 import scannerPhase2.ScannerPhase2.Token;
 import scannerPhase2.ScannerPhase2.TokenType;
 
-public class evaluator extends ParserPhase2{
+public class evaluator extends parser{
 
 	List<Token> tokens = new ArrayList<>();
 	
@@ -97,8 +97,10 @@ public class evaluator extends ParserPhase2{
 		}
 		
 		TreeNode node = new TreeNode(tokens1.get(0), tokens1.get(0));
-		node = node.parseStatement(tokens1);
+		node = node.parseExpr(tokens1, 0);
 		writeAST(node, outputFile, numTab);
+		
+		
 	}
 
 }

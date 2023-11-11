@@ -1,13 +1,13 @@
-Line: 3 + 4 + y 
-3: NUMBER
+Line: y + 3 + y
+y: IDENTIFIER
 +: SYMBOL
-4: NUMBER
+3: NUMBER
 +: SYMBOL
 y: IDENTIFIER
 
 AST:
 +: SYMBOL
 	+: SYMBOL
+		y: IDENTIFIER
 		3: NUMBER
-		4: NUMBER
 	y: IDENTIFIER
