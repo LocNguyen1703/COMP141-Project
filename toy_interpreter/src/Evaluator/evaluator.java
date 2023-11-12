@@ -57,7 +57,7 @@ public class evaluator extends parser{
 	}
 	
 	public static void preOrder(TreeNode node, Stack<Token> stack) {
-		if (node == null)return;
+		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError()))return;
 		
 		//should I create a stack of Tokens or of TreeNodes??
 		stack.push(node.getDataToken());
