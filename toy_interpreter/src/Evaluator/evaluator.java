@@ -5,9 +5,7 @@ Project Phase 2.1 (PR2.1): Parser for expressions
 
 package Evaluator;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,11 +21,6 @@ import scannerPhase2.ScannerPhase2.TokenType;
 
 public class evaluator extends parser{
 
-	List<Token> tokens = new ArrayList<>();
-	
-	Stack<Token> stack = new Stack<Token>();
-	
-	
 	public evaluator() {
 		// TODO Auto-generated constructor stub
 	}
