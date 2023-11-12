@@ -72,7 +72,7 @@ public class evaluator extends parser{
 	}
 	
 	public static void writeResult(Stack<Token> stack, TreeNode node, String outputFile) throws IOException {
-		if (node == null) return;
+		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) return;
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
 		bw.newLine();
 		bw.write("result = " + stack.peek().getValue());
@@ -106,7 +106,6 @@ public class evaluator extends parser{
 		Stack<Token> stack = new Stack<>();
 		preOrder(node, stack);
 		
-		System.out.println(stack.peek().getValue());
 		writeResult(stack, node, outputFile);
 	}
 
