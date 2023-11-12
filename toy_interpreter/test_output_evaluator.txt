@@ -1,22 +1,41 @@
-Line: 3 * (5 + 10 / 3 - 1) - (50 / 7 + 13
-3: NUMBER
-*: SYMBOL
+Line: (1 + 12 - 2 * 4) + 6 - 8 * 2 / 4 + 2
 (: SYMBOL
-5: NUMBER
-+: SYMBOL
-10: NUMBER
-/: SYMBOL
-3: NUMBER
--: SYMBOL
 1: NUMBER
-): SYMBOL
--: SYMBOL
-(: SYMBOL
-50: NUMBER
-/: SYMBOL
-7: NUMBER
 +: SYMBOL
-13: NUMBER
+12: NUMBER
+-: SYMBOL
+2: NUMBER
+*: SYMBOL
+4: NUMBER
+): SYMBOL
++: SYMBOL
+6: NUMBER
+-: SYMBOL
+8: NUMBER
+*: SYMBOL
+2: NUMBER
+/: SYMBOL
+4: NUMBER
++: SYMBOL
+2: NUMBER
 
 AST:
-error: incorrect syntax
++: SYMBOL
+	+: SYMBOL
+		+: SYMBOL
+			1: NUMBER
+			-: SYMBOL
+				12: NUMBER
+				*: SYMBOL
+					2: NUMBER
+					4: NUMBER
+		-: SYMBOL
+			6: NUMBER
+			/: SYMBOL
+				*: SYMBOL
+					8: NUMBER
+					2: NUMBER
+				4: NUMBER
+	2: NUMBER
+
+result = 9
