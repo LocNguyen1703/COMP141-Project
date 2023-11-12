@@ -32,49 +32,52 @@ public class evaluator extends parser{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Stack<Token> evaluateTop3Expr (Stack<Token> stack) {
-		if (stack.peek().getType()!=TokenType.NUMBER || stack.elementAt(stack.size()-1).getType()!=TokenType.NUMBER || stack.elementAt(stack.size()-2).getType()!=TokenType.NUMBER) {
+	public static Stack<Token> evaluateTop3Expr (Stack<Token> stack) {
+		if (stack.size() < 3 || stack.peek().getType()!=TokenType.NUMBER || stack.elementAt(stack.size()-2).getType()!=TokenType.NUMBER || stack.elementAt(stack.size()-3).getType()!=TokenType.SYMBOL) {
 			return stack;
 		}
-		Token token1 = stack.peek();
-		Token token2 = stack.elementAt(stack.size()-1);
-		Token token3 = stack.elementAt(stack.size()-2);
-		String r = ""; 
-		switch (token3.getValue()) {
-			case "*": 
-				r = String.valueOf(Integer.valueOf(token1.getValue())*Integer.valueOf(token2.getValue()));
-			case "/":
-				r = String.valueOf(Integer.valueOf(token1.getValue())/Integer.valueOf(token2.getValue()));
-			case "-": 
-				r = String.valueOf(Integer.valueOf(token1.getValue())-Integer.valueOf(token2.getValue()));
-			case "+":
-				r = String.valueOf(Integer.valueOf(token1.getValue())+Integer.valueOf(token2.getValue()));
-		}
 		
-		stack.pop();
-		stack.pop();
-		stack.pop();
-		stack.push(new Token (TokenType.NUMBER, r));
-		
-		return stack;
+		else {
+			Token token1 = stack.peek();
+			Token token2 = stack.elementAt(stack.size()-2);
+			Token token3 = stack.elementAt(stack.size()-3);
+			String r = "";
+	
+			if (token3.getValue().equals("*")) r = String.valueOf(Integer.valueOf(token2.getValue())*Integer.valueOf(token1.getValue()));
+			else if (token3.getValue().equals("/")) r = String.valueOf(Integer.valueOf(token2.getValue())/Integer.valueOf(token1.getValue()));
+			else if (token3.getValue().equals("+")) r = String.valueOf(Integer.valueOf(token2.getValue())+Integer.valueOf(token1.getValue()));
+			else if (token3.getValue().equals("-")) r = String.valueOf(Integer.valueOf(token2.getValue())-Integer.valueOf(token1.getValue()));			
+			stack.pop();
+			stack.pop();
+			stack.pop();
+			stack.push(new Token (TokenType.NUMBER, r));
+			
+			return stack;
+		}		
 	}
 	
-	public void preOrder(TreeNode node, Stack<Token> stack) {
-		if (node == null) return;
+	public static void preOrder(TreeNode node, Stack<Token> stack) {
+		if (node == null)return;
 		
 		//should I create a stack of Tokens or of TreeNodes??
 		stack.push(node.getDataToken());
 		stack = evaluateTop3Expr (stack);
 		
 		preOrder(node.getLeftChild(), stack);
+		stack = evaluateTop3Expr (stack);
 		preOrder(node.getMidChild(), stack);
+		stack = evaluateTop3Expr (stack);
 		preOrder(node.getRightChild(), stack);
+		stack = evaluateTop3Expr (stack);
 	}
 	
-	
-	
-	
-	
+	public static void writeResult(Stack<Token> stack, TreeNode node, String outputFile) throws IOException {
+		if (node == null) return;
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
+		bw.newLine();
+		bw.write("result = " + stack.peek().getValue());
+		bw.close();
+	}
 	
 	public static void main(String[] args) throws IOException {
 		if (args.length != 2) {
@@ -100,7 +103,11 @@ public class evaluator extends parser{
 		node = node.parseExpr(tokens1, 0);
 		writeAST(node, outputFile, numTab);
 		
+		Stack<Token> stack = new Stack<>();
+		preOrder(node, stack);
 		
+		System.out.println(stack.peek().getValue());
+		writeResult(stack, node, outputFile);
 	}
 
 }

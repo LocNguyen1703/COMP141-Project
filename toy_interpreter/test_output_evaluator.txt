@@ -1,4 +1,4 @@
-Line: 3 * (5 + 10 / 3 - 1)
+Line: 3 * (5 + 10 / 3 - 1) - (50 / 7 + 13
 3: NUMBER
 *: SYMBOL
 (: SYMBOL
@@ -10,6 +10,14 @@ Line: 3 * (5 + 10 / 3 - 1)
 -: SYMBOL
 1: NUMBER
 ): SYMBOL
+-: SYMBOL
+(: SYMBOL
+50: NUMBER
+/: SYMBOL
+7: NUMBER
++: SYMBOL
+13: NUMBER
 
 AST:
 error: incorrect syntax
+result = 21
