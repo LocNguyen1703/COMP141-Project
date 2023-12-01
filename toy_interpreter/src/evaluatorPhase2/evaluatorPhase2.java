@@ -72,6 +72,35 @@ public class evaluatorPhase2 extends ParserPhase2{
 		deleteNode (node.getRightChild());
 	}
 	
+	// thought: maybe we create separate helper functions to traverse semicolon, while subtree and if subtree individually?
+	// thought: also, should I even do recursive for traverseAST or should I just do a while loop?
+	public static void evaluateWhileStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+		
+	}
+	
+	public static void evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+		
+	}
+	
+	public static void evaluateSequencing (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+		if (node.getLeftChild().getDataToken().getValue().equals(";")) {
+			evaluateSequencing (node.getLeftChild(), stack, memory);
+		}
+		else if (node.getLeftChild().getDataToken().getValue().equals(":=")) {
+			evaluateAssignment(node.getLeftChild(), stack, memory);
+		}
+	}
+	
+	public static void evaluateAssignment (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+		preOrder(node.getRightChild(), stack, memory);
+		//stack.peek should return a single integer
+		memory.put(node.getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
+		TreeNode temp = node.getRightChild();
+		deleteNode(node.getLeftChild());
+		deleteNode(node.getRightChild());
+		node = temp;
+	}
+	
 	// new function to traverse through AST and evaluate sequencing, if-statements & while statements
 	public static void traverseAST (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory ) {
 		// idk if this is correct but my guess is it's gonna keep traversing until AST empty i.e. node itself is null? (maybe add a check for its children too?)
@@ -79,18 +108,22 @@ public class evaluatorPhase2 extends ParserPhase2{
 		
 		//also this if condition might make traverseAST exit before it can traverse through the whole AST
 		if (node == null || node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError()))return;
-		if (node.getLeftChild().getDataToken().getValue().equals(";")) {
-			traverseAST(node.getLeftChild(), stack, memory);
+		if (node.getDataToken().getValue().equals(";")) {
+			if (node.getLeftChild().getDataToken().getValue().equals(";")) traverseAST(node.getLeftChild(), stack, memory);
+			else if (node.getLeftChild().getDataToken().getValue().equals(":=")){
+//				preOrder(node.getLeftChild().getRightChild(), stack, memory);
+//				//stack.peek should return a single integer
+//				memory.put(node.getLeftChild().getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
+//				TreeNode temp = node.getRightChild();
+//				deleteNode(node.getLeftChild());
+//				deleteNode(node.getRightChild());
+//				node = temp;
+				evaluateAssignment (node.getLeftChild(), stack, memory);
+			}
+			
 		}
-		else if (node.getLeftChild().getDataToken().getValue().equals(":=")){
-			preOrder(node.getLeftChild().getRightChild(), stack, memory);
-			//stack.peek should return a single integer
-			memory.put(node.getLeftChild().getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
-			TreeNode temp = node.getRightChild();
-			deleteNode(node.getLeftChild());
-			deleteNode(node.getRightChild());
-			node = temp;			
-		}
+		
+		
 		
 		
 	}
