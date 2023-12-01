@@ -75,7 +75,14 @@ public class evaluatorPhase2 extends ParserPhase2{
 	// thought: maybe we create separate helper functions to traverse semicolon, while subtree and if subtree individually?
 	// thought: also, should I even do recursive for traverseAST or should I just do a while loop?
 	public static void evaluateWhileStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
-		
+		preOrder(node, stack, memory);
+		if (Integer.valueOf(stack.peek().getValue())<=0) {
+			deleteNode (node);
+			return;
+		}
+		TreeNode t = new TreeNode(new Token(TokenType.SYMBOL, ";"), null, node.getRightChild(), null, node);
+		evaluateSequencing(t, stack, memory);
+		evaluateWhileStatement(node, stack, memory);
 	}
 	
 	public static void evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
@@ -88,6 +95,13 @@ public class evaluatorPhase2 extends ParserPhase2{
 		}
 		else if (node.getLeftChild().getDataToken().getValue().equals(":=")) {
 			evaluateAssignment(node.getLeftChild(), stack, memory);
+		}
+		else if (node.getLeftChild().getDataToken().getValue().equals("if")) {
+			evaluateIfStatement(node.getLeftChild(), stack, memory);
+		}
+
+		else if (node.getLeftChild().getDataToken().getValue().equals("while")) {
+			evaluateWhileStatement(node.getLeftChild(), stack, memory);
 		}
 	}
 	
