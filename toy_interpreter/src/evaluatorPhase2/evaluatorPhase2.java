@@ -218,7 +218,4 @@ public class evaluatorPhase2 extends ParserPhase2{
 		
 		writeResult(memory, node, outputFile);
 	}
-	
-	
-	
 }
