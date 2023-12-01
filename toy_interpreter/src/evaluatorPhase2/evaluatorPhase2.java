@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
 
 import Evaluator.evaluator;
 import Parser.parser.TreeNode;
@@ -149,33 +150,42 @@ public class evaluatorPhase2 extends ParserPhase2{
 		// so maybe when u use this function outside use it in a loop?
 		
 		//also this if condition might make traverseAST exit before it can traverse through the whole AST
-		if (node == null || node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError()))return;
-		if (node.getDataToken().getValue().equals(";")) {
-			if (node.getLeftChild().getDataToken().getValue().equals(";")) traverseAST(node.getLeftChild(), stack, memory);
-			else if (node.getLeftChild().getDataToken().getValue().equals(":=")){
-//				preOrder(node.getLeftChild().getRightChild(), stack, memory);
-//				//stack.peek should return a single integer
-//				memory.put(node.getLeftChild().getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
-//				TreeNode temp = node.getRightChild();
-//				deleteNode(node.getLeftChild());
-//				deleteNode(node.getRightChild());
-//				node = temp;
-				evaluateAssignment (node.getLeftChild(), stack, memory);
-			}
-			
-		}
-		
-		
-		
-		
+//		if (node == null || node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError()))return;
+//		if (node.getDataToken().getValue().equals(";")) {
+//			if (node.getLeftChild().getDataToken().getValue().equals(";")) traverseAST(node.getLeftChild(), stack, memory);
+//			else if (node.getLeftChild().getDataToken().getValue().equals(":=")){
+////				preOrder(node.getLeftChild().getRightChild(), stack, memory);
+////				//stack.peek should return a single integer
+////				memory.put(node.getLeftChild().getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
+////				TreeNode temp = node.getRightChild();
+////				deleteNode(node.getLeftChild());
+////				deleteNode(node.getRightChild());
+////				node = temp;
+//				evaluateAssignment (node.getLeftChild(), stack, memory);
+//			}	
+//		}
+		if (node.getDataToken().getValue().equals(";")) evaluateSequencing(node, stack, memory);
+		else if (node.getDataToken().getValue().equals(":=")) evaluateAssignment (node, stack, memory);
+		else if (node.getDataToken().getValue().equals("while")) evaluateWhileStatement (node, stack, memory);
+		else if (node.getDataToken().getValue().equals("if")) evaluateIfStatement (node, stack, memory);
 	}
 	
-	public static void writeResult(Stack<Token> stack, TreeNode node, String outputFile) throws IOException {
+//	public static void writeResult(Stack<Token> stack, TreeNode node, String outputFile) throws IOException {
+//		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) return;
+//		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
+//		bw.newLine();
+//		bw.write("result = " + stack.peek().getValue());
+//		bw.close();
+//	}
+	
+	public static void writeResult(Map<Token, Integer> memory, TreeNode node, String outputFile) throws IOException {
 		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) return;
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
-		bw.newLine();
-		bw.write("result = " + stack.peek().getValue());
-		bw.close();
+		for (Entry<Token, Integer> entry : memory.entrySet()) {
+			bw.newLine();
+			bw.write(String.valueOf(entry.getKey()) + ": " + String.valueOf(entry.getValue()));
+			bw.close();
+		}
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -204,9 +214,9 @@ public class evaluatorPhase2 extends ParserPhase2{
 		
 		Stack<Token> stack = new Stack<>();
 		Map<Token, Integer> memory = new HashMap<Token, Integer>();
-		preOrder(node, stack, memory);
+		traverseAST(node, stack, memory);
 		
-		writeResult(stack, node, outputFile);
+		writeResult(memory, node, outputFile);
 	}
 	
 	
