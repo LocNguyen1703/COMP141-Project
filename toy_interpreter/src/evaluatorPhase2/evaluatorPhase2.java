@@ -57,24 +57,31 @@ public class evaluatorPhase2 extends ParserPhase2{
 		stack = evaluateTop3Expr (stack, memory);
 	}
 	
-	// I don't think this would work... but the idea is to have a helper function to delete node when traversing AST
+	// a helper function to delete node when traversing AST
 	public static void deleteNode (TreeNode node) {
 //		if (node.getLeftChild() == null && node.getMidChild() == null && node.getRightChild() == null) node = null;
 //		else {
 //			node.setLeftChild(null);
 //			node.setRightChild(null);
 //			node.setMidChild(null);
-//			
 //		}
-		node = null;
-		deleteNode (node.getLeftChild());
-		deleteNode (node.getMidChild());
-		deleteNode (node.getRightChild());
+////		node = null;
+//		deleteNode (node.getLeftChild());
+//		deleteNode (node.getMidChild());
+//		deleteNode (node.getRightChild());
+//		node = null;
+		
+		// what happens when I nullify node's children and then itself? if its children had children what would happen to those children?
+		if (node.getLeftChild()!= null) node.setLeftChild(null);
+		if (node.getMidChild()!= null) node.setRightChild(null);
+		if (node.getRightChild()!= null) node.setMidChild(null);
+		if(node != null) node = null;
 	}
 	
 	// thought: maybe we create separate helper functions to traverse semicolon, while subtree and if subtree individually?
 	// thought: also, should I even do recursive for traverseAST or should I just do a while loop?
 	public static void evaluateWhileStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+		if (node == null) return;
 		preOrder(node, stack, memory);
 		if (Integer.valueOf(stack.peek().getValue())<=0) {
 			deleteNode (node);
@@ -86,7 +93,26 @@ public class evaluatorPhase2 extends ParserPhase2{
 	}
 	
 	public static void evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
-		
+		if (node == null) return;
+		preOrder (node.getLeftChild(), stack, memory);
+		if (Integer.valueOf(stack.peek().getValue()) > 0) {
+			TreeNode temp = node.getMidChild();
+			deleteNode (node.getLeftChild());
+			deleteNode (node.getMidChild());
+			deleteNode (node.getRightChild());
+			node = temp; 
+			deleteNode(temp);
+			evaluateSequencing(node, stack, memory);
+		}
+		else {
+			TreeNode temp = node.getRightChild();
+			deleteNode (node.getLeftChild());
+			deleteNode (node.getMidChild());
+			deleteNode (node.getRightChild());
+			node = temp; 
+			deleteNode(temp);
+			evaluateSequencing(node, stack, memory);
+		}
 	}
 	
 	public static void evaluateSequencing (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
@@ -106,6 +132,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 	}
 	
 	public static void evaluateAssignment (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+		if (node == null) return;
 		preOrder(node.getRightChild(), stack, memory);
 		//stack.peek should return a single integer
 		memory.put(node.getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
@@ -113,6 +140,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 		deleteNode(node.getLeftChild());
 		deleteNode(node.getRightChild());
 		node = temp;
+		deleteNode(temp);
 	}
 	
 	// new function to traverse through AST and evaluate sequencing, if-statements & while statements
