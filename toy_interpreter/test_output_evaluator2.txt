@@ -1,0 +1,77 @@
+Line: z := 0;
+z: IDENTIFIER
+:=: SYMBOL
+0: NUMBER
+;: SYMBOL
+
+Line: x := 3;
+x: IDENTIFIER
+:=: SYMBOL
+3: NUMBER
+;: SYMBOL
+
+Line: y := 0;
+y: IDENTIFIER
+:=: SYMBOL
+0: NUMBER
+;: SYMBOL
+
+Line: 
+
+Line: while x-y do
+while: KEYWORD
+x: IDENTIFIER
+-: SYMBOL
+y: IDENTIFIER
+do: KEYWORD
+
+Line: 	z := z + y;
+z: IDENTIFIER
+:=: SYMBOL
+z: IDENTIFIER
++: SYMBOL
+y: IDENTIFIER
+;: SYMBOL
+
+Line: 	y := y + 1
+y: IDENTIFIER
+:=: SYMBOL
+y: IDENTIFIER
++: SYMBOL
+1: NUMBER
+
+Line: endwhile
+endwhile: KEYWORD
+
+AST:
+;: SYMBOL
+	;: SYMBOL
+		;: SYMBOL
+			:=: SYMBOL
+				z: IDENTIFIER
+				0: NUMBER
+			:=: SYMBOL
+				x: IDENTIFIER
+				3: NUMBER
+		:=: SYMBOL
+			y: IDENTIFIER
+			0: NUMBER
+	while: KEYWORD
+		-: SYMBOL
+			x: IDENTIFIER
+			y: IDENTIFIER
+		;: SYMBOL
+			:=: SYMBOL
+				z: IDENTIFIER
+				+: SYMBOL
+					z: IDENTIFIER
+					y: IDENTIFIER
+			:=: SYMBOL
+				y: IDENTIFIER
+				+: SYMBOL
+					y: IDENTIFIER
+					1: NUMBER
+
+x = 3
+y = 3
+z = 3

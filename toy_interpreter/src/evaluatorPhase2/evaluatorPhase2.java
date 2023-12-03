@@ -3,11 +3,13 @@ package evaluatorPhase2;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Stack;
 
-import Evaluator.evaluator;
-import Parser.parser.TreeNode;
 import parserPhase2.ParserPhase2;
 import scannerPhase2.ScannerPhase2;
 import scannerPhase2.ScannerPhase2.Token;
@@ -18,21 +20,47 @@ public class evaluatorPhase2 extends ParserPhase2{
 	public evaluatorPhase2() {
 		// TODO Auto-generated constructor stub
 	}
-	public static Stack<Token> evaluateTop3Expr (Stack<Token> stack, Map<Token, Integer> memory) {
-		if (stack.size() < 3 || stack.peek().getType()!=TokenType.NUMBER || stack.elementAt(stack.size()-2).getType()!=TokenType.NUMBER || stack.elementAt(stack.size()-3).getType()!=TokenType.SYMBOL) {
+	public static Stack<Token> evaluateTop3Expr (Stack<Token> stack, Map<String, Integer> memory) {
+		if (stack.size() < 3 || (stack.peek().getType()!=TokenType.NUMBER && stack.peek().getType()!=TokenType.IDENTIFIER) || (stack.elementAt(stack.size()-2).getType()!=TokenType.NUMBER && stack.elementAt(stack.size()-2).getType()!=TokenType.IDENTIFIER) || stack.elementAt(stack.size()-3).getType()!=TokenType.SYMBOL) {
 			return stack;
 		}
 		
 		else {
 			Token token1 = stack.peek();
 			Token token2 = stack.elementAt(stack.size()-2);
+			int value1 = 0; 
+			int value2 = 0;
 			Token token3 = stack.elementAt(stack.size()-3);
 			String r = "";
 			
-			if (token3.getValue().equals("*")) r = String.valueOf(memory.get(token2)*memory.get(token1));
-			else if (token3.getValue().equals("/")) r = String.valueOf(memory.get(token2)/memory.get(token1));
-			else if (token3.getValue().equals("+")) r = String.valueOf(memory.get(token2)+memory.get(token1));
-			else if (token3.getValue().equals("-")) r = String.valueOf(memory.get(token2)-memory.get(token1));			
+			if (token1.getType()==TokenType.IDENTIFIER) {
+//				for (Entry<String, Integer> entry : memory.entrySet()) {
+//					if (entry.getKey().equals(token1.getValue())) value1 = entry.getValue();
+//				}
+				if(memory.containsKey(token1.getValue())) value1 = memory.get(token1.getValue());
+			}
+			else value1 = Integer.valueOf(token1.getValue());
+			
+			if (token2.getType()==TokenType.IDENTIFIER) {
+//				for (Entry<String, Integer> entry : memory.entrySet()) {
+//					if (entry.getKey().equals(token2.getValue())) value2 = entry.getValue();
+//				}
+				if(memory.containsKey(token2.getValue())) value2 = memory.get(token2.getValue());
+			}
+			else value2 = Integer.valueOf(token2.getValue());	
+			
+			if (token3.getValue().equals("*")) {
+				r = String.valueOf(value2*value1);	
+			}
+			else if (token3.getValue().equals("/")) {
+				r = String.valueOf(value2/value1);	
+			}
+			else if (token3.getValue().equals("+")) {
+				r = String.valueOf(value2+value1);		
+			}
+			else if (token3.getValue().equals("-")) {
+				r = String.valueOf(value2-value1);			
+			}
 			stack.pop();
 			stack.pop();
 			stack.pop();
@@ -43,7 +71,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 	}
 	
 	// this preOrder function is now used to evaluate expression alone - we need a new function to traverse through AST and evaluate sequencing, if-statements & while statements
-	public static void preOrder(TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+	public static void preOrder(TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
 		if (node == null || node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError()))return;
 		
 		//should I create a stack of Tokens or of TreeNodes??
@@ -81,50 +109,85 @@ public class evaluatorPhase2 extends ParserPhase2{
 	
 	// thought: maybe we create separate helper functions to traverse semicolon, while subtree and if subtree individually?
 	// thought: also, should I even do recursive for traverseAST or should I just do a while loop?
-	public static void evaluateWhileStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
-		if (node == null) return;
-		preOrder(node, stack, memory);
+	public static TreeNode evaluateWhileStatement (TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
+		if (node == null) return null;
+		preOrder(node.getLeftChild(), stack, memory);
+		System.out.println(stack.peek().getValue());
 		if (Integer.valueOf(stack.peek().getValue())<=0) {
 			deleteNode (node);
-			return;
+			return null;
 		}
-		TreeNode t = new TreeNode(new Token(TokenType.SYMBOL, ";"), null, node.getRightChild(), null, node);
-		evaluateSequencing(t, stack, memory);
-		evaluateWhileStatement(node, stack, memory);
+		TreeNode rightChild = new TreeNode(node.getRightChild().getDataToken(), node.getRightChild().getNextToken(), node.getRightChild().getLeftChild(), node.getRightChild().getMidChild(), node.getRightChild().getRightChild());
+		TreeNode t = new TreeNode(new Token(TokenType.SYMBOL, ";"), null, rightChild, null, node);
+//		evaluateSequencing(t, stack, memory);
+//		evaluateWhileStatement(node, stack, memory);
+		// don't know if this stack.clear() line will mess the result up 
+		stack.clear();
+		return t;
 	}
 	
-	public static void evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
-		if (node == null) return;
+	public static boolean evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
+//		if (node == null) return;
 		preOrder (node.getLeftChild(), stack, memory);
+		stack.clear();
 		if (Integer.valueOf(stack.peek().getValue()) > 0) {
-			TreeNode temp = node.getMidChild();
-			deleteNode (node.getLeftChild());
-			deleteNode (node.getMidChild());
-			deleteNode (node.getRightChild());
-			node = temp; 
-			deleteNode(temp);
-			evaluateSequencing(node, stack, memory);
+//			TreeNode temp = node.getMidChild();
+//			TreeNode temp = new TreeNode (node.getMidChild().getDataToken(), node.getMidChild().getNextToken(), node.getMidChild().getLeftChild(), node.getMidChild().getMidChild(), node.getMidChild().getRightChild());
+//			deleteNode (node.getLeftChild());
+//			deleteNode (node.getMidChild());
+//			deleteNode (node.getRightChild());
+//			node.setDataToken(node.getMidChild().getDataToken());
+//			node.setNextToken(node.getMidChild().getNextToken());
+//			node.setLeftChild(node.getMidChild().getLeftChild());
+//			node.setRightChild(node.getMidChild().getRightChild());
+//			node.setMidChild(node.getMidChild().getMidChild());
+//			evaluateSequencing(node, stack, memory);
+			return true;
 		}
 		else {
-			TreeNode temp = node.getRightChild();
-			deleteNode (node.getLeftChild());
-			deleteNode (node.getMidChild());
-			deleteNode (node.getRightChild());
-			node = temp; 
-			deleteNode(temp);
-			evaluateSequencing(node, stack, memory);
+//			TreeNode temp = node.getRightChild();
+//			TreeNode temp = new TreeNode (node.getRightChild().getDataToken(), node.getRightChild().getNextToken(), node.getRightChild().getLeftChild(), node.getRightChild().getMidChild(), node.getRightChild().getRightChild());
+//			deleteNode (node.getLeftChild());
+//			deleteNode (node.getMidChild());
+//			deleteNode (node.getRightChild());
+//			node = temp;
+//			node.setDataToken(node.getRightChild().getDataToken());
+//			node.setNextToken(node.getRightChild().getNextToken());
+//			node.setLeftChild(node.getRightChild().getLeftChild());	
+//			node.setMidChild(node.getRightChild().getMidChild());
+//			node.setRightChild(node.getRightChild().getRightChild());
+//			evaluateSequencing(node, stack, memory);
+			return false;
 		}
 	}
 	
-	public static void evaluateSequencing (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+	public static void evaluateSequencing (TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
 		if (node.getLeftChild().getDataToken().getValue().equals(";")) {
 			evaluateSequencing (node.getLeftChild(), stack, memory);
 		}
 		else if (node.getLeftChild().getDataToken().getValue().equals(":=")) {
 			evaluateAssignment(node.getLeftChild(), stack, memory);
+			// maybe I don't set temp to right child (temp might be come a REFERENCE to right child)
+			// but create a new node so that it is a COPY of the right child
+//			TreeNode temp = node.getRightChild();
+//			TreeNode temp = new TreeNode(node.getRightChild().getDataToken(), node.getRightChild().getNextToken(),node.getRightChild().getLeftChild(), node.getRightChild().getMidChild(), node.getRightChild().getRightChild());
+//			node.setLeftChild(null);
+//			node.setRightChild(null);
+//			node = temp;
+			node.setDataToken(node.getRightChild().getDataToken());
+			node.setNextToken(node.getRightChild().getNextToken());
+			node.setLeftChild(node.getRightChild().getLeftChild());
+			node.setMidChild(node.getRightChild().getMidChild());
+			node.setRightChild(node.getRightChild().getRightChild());
 		}
 		else if (node.getLeftChild().getDataToken().getValue().equals("if")) {
-			evaluateIfStatement(node.getLeftChild(), stack, memory);
+			boolean ans = evaluateIfStatement(node.getLeftChild(), stack, memory);
+			if (ans) {
+				node.setLeftChild(node.getLeftChild().getMidChild());
+			}
+			else {
+				node.setLeftChild(node.getLeftChild().getRightChild());	
+			}
 		}
 
 		else if (node.getLeftChild().getDataToken().getValue().equals("while")) {
@@ -132,20 +195,33 @@ public class evaluatorPhase2 extends ParserPhase2{
 		}
 	}
 	
-	public static void evaluateAssignment (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory) {
+	public static void evaluateAssignment (TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
 		if (node == null) return;
 		preOrder(node.getRightChild(), stack, memory);
 		//stack.peek should return a single integer
-		memory.put(node.getLeftChild().getDataToken(), Integer.valueOf(stack.peek().getValue()));
-		TreeNode temp = node.getRightChild();
-		deleteNode(node.getLeftChild());
-		deleteNode(node.getRightChild());
-		node = temp;
-		deleteNode(temp);
+		if (memory.containsKey(node.getLeftChild().getDataToken().getValue())==false) memory.put(node.getLeftChild().getDataToken().getValue(), Integer.valueOf(stack.peek().getValue()));
+//		for (Entry<String, Integer> entry : memory.entrySet()) {
+//			if (entry.getKey().equals(node.getLeftChild().getDataToken().getValue())) memory.replace(entry.getKey(), Integer.valueOf(stack.peek().getValue()));
+//		}
+		else memory.replace(node.getLeftChild().getDataToken().getValue(), Integer.valueOf(stack.peek().getValue()));
+		
+//		deleteNode(node); apparently deleteNode() doesn't work right here
+//		TreeNode temp = node.getRightChild();
+//		deleteNode(node.getLeftChild());
+//		deleteNode(node.getRightChild());
+//		node = temp;
+//		deleteNode(temp);
+		/*
+		 problem: the node accessed here is the 1st ":=" node, and so this logic of deletion doesn't make 
+		 sense (I want to delete the last ";" node's left child, which should be this ":=" node, and then replace 
+		 the ";" node with its right child
+		 solution: should I create a link to parent for every node?
+		 */
+		stack.clear();
 	}
 	
 	// new function to traverse through AST and evaluate sequencing, if-statements & while statements
-	public static void traverseAST (TreeNode node, Stack<Token> stack, Map<Token, Integer> memory ) {
+	public static void traverseAST (TreeNode node, Stack<Token> stack, Map<String, Integer> memory ) {
 		// idk if this is correct but my guess is it's gonna keep traversing until AST empty i.e. node itself is null? (maybe add a check for its children too?)
 		// so maybe when u use this function outside use it in a loop?
 		
@@ -164,10 +240,18 @@ public class evaluatorPhase2 extends ParserPhase2{
 //				evaluateAssignment (node.getLeftChild(), stack, memory);
 //			}	
 //		}
-		if (node.getDataToken().getValue().equals(";")) evaluateSequencing(node, stack, memory);
-		else if (node.getDataToken().getValue().equals(":=")) evaluateAssignment (node, stack, memory);
-		else if (node.getDataToken().getValue().equals("while")) evaluateWhileStatement (node, stack, memory);
-		else if (node.getDataToken().getValue().equals("if")) evaluateIfStatement (node, stack, memory);
+		while (node != null) {
+			if (node.getDataToken().getValue().equals(";")) evaluateSequencing(node, stack, memory);
+			else if (node.getDataToken().getValue().equals(":=")) {
+				evaluateAssignment (node, stack, memory);
+				node = null;
+			}
+			else if (node.getDataToken().getValue().equals("while")) {
+				TreeNode t = evaluateWhileStatement (node, stack, memory);
+				node = t;
+			}
+			else if (node.getDataToken().getValue().equals("if")) evaluateIfStatement (node, stack, memory);	
+		}
 	}
 	
 //	public static void writeResult(Stack<Token> stack, TreeNode node, String outputFile) throws IOException {
@@ -178,14 +262,14 @@ public class evaluatorPhase2 extends ParserPhase2{
 //		bw.close();
 //	}
 	
-	public static void writeResult(Map<Token, Integer> memory, TreeNode node, String outputFile) throws IOException {
+	public static void writeResult(Map<String, Integer> memory, TreeNode node, String outputFile) throws IOException {
 		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) return;
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
-		for (Entry<Token, Integer> entry : memory.entrySet()) {
+		for (Entry<String, Integer> entry : memory.entrySet()) {
 			bw.newLine();
-			bw.write(String.valueOf(entry.getKey()) + ": " + String.valueOf(entry.getValue()));
-			bw.close();
+			bw.write(entry.getKey() + " = " + String.valueOf(entry.getValue()));
 		}
+		bw.close();
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -209,11 +293,11 @@ public class evaluatorPhase2 extends ParserPhase2{
 		}
 		
 		TreeNode node = new TreeNode(tokens1.get(0), tokens1.get(0));
-		node = node.parseExpr(tokens1);
+		node = node.parseStatement(tokens1);
 		writeAST(node, outputFile, numTab);
 		
 		Stack<Token> stack = new Stack<>();
-		Map<Token, Integer> memory = new HashMap<Token, Integer>();
+		Map<String, Integer> memory = new HashMap<String, Integer>();
 		traverseAST(node, stack, memory);
 		
 		writeResult(memory, node, outputFile);

@@ -92,6 +92,10 @@ public class ParserPhase2 {
 			return this.Error;
 		}
 		
+		public Token getNextToken() {
+			return this.next_token;
+		}
+		
 		public Token consumeToken(List<Token> tokens) {
 			if (index+1 < tokens.size()) {
 				index ++; 
