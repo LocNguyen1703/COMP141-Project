@@ -1,77 +1,61 @@
-Line: z := 0;
-z: IDENTIFIER
-:=: SYMBOL
-0: NUMBER
-;: SYMBOL
+Line: if 5 then
+if: KEYWORD
+5: NUMBER
+then: KEYWORD
 
-Line: x := 3;
-x: IDENTIFIER
-:=: SYMBOL
-3: NUMBER
-;: SYMBOL
-
-Line: y := 0;
-y: IDENTIFIER
-:=: SYMBOL
-0: NUMBER
-;: SYMBOL
-
-Line: 
-
-Line: while x-y do
-while: KEYWORD
-x: IDENTIFIER
--: SYMBOL
-y: IDENTIFIER
-do: KEYWORD
-
-Line: 	z := z + y;
-z: IDENTIFIER
-:=: SYMBOL
-z: IDENTIFIER
-+: SYMBOL
-y: IDENTIFIER
-;: SYMBOL
-
-Line: 	y := y + 1
-y: IDENTIFIER
-:=: SYMBOL
-y: IDENTIFIER
-+: SYMBOL
+Line: 	if 1 - 2 then
+if: KEYWORD
 1: NUMBER
+-: SYMBOL
+2: NUMBER
+then: KEYWORD
 
-Line: endwhile
-endwhile: KEYWORD
+Line: 		x := 5
+x: IDENTIFIER
+:=: SYMBOL
+5: NUMBER
+
+Line: 	else
+else: KEYWORD
+
+Line: 		z := 6
+z: IDENTIFIER
+:=: SYMBOL
+6: NUMBER
+
+Line: 	endif
+endif: KEYWORD
+
+Line: else
+else: KEYWORD
+
+Line: 	t := 4 - 3
+t: IDENTIFIER
+:=: SYMBOL
+4: NUMBER
+-: SYMBOL
+3: NUMBER
+
+Line: endif
+endif: KEYWORD
 
 AST:
-;: SYMBOL
-	;: SYMBOL
-		;: SYMBOL
-			:=: SYMBOL
-				z: IDENTIFIER
-				0: NUMBER
-			:=: SYMBOL
-				x: IDENTIFIER
-				3: NUMBER
-		:=: SYMBOL
-			y: IDENTIFIER
-			0: NUMBER
-	while: KEYWORD
+if: KEYWORD
+	5: NUMBER
+	if: KEYWORD
 		-: SYMBOL
+			1: NUMBER
+			2: NUMBER
+		:=: SYMBOL
 			x: IDENTIFIER
-			y: IDENTIFIER
-		;: SYMBOL
-			:=: SYMBOL
-				z: IDENTIFIER
-				+: SYMBOL
-					z: IDENTIFIER
-					y: IDENTIFIER
-			:=: SYMBOL
-				y: IDENTIFIER
-				+: SYMBOL
-					y: IDENTIFIER
-					1: NUMBER
+			5: NUMBER
+		:=: SYMBOL
+			z: IDENTIFIER
+			6: NUMBER
+	:=: SYMBOL
+		t: IDENTIFIER
+		-: SYMBOL
+			4: NUMBER
+			3: NUMBER
 
-x = 3
-y = 3
-z = 3
+z = 6

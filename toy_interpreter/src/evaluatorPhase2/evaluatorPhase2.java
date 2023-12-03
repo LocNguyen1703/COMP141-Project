@@ -129,7 +129,6 @@ public class evaluatorPhase2 extends ParserPhase2{
 	public static boolean evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
 //		if (node == null) return;
 		preOrder (node.getLeftChild(), stack, memory);
-		stack.clear();
 		if (Integer.valueOf(stack.peek().getValue()) > 0) {
 //			TreeNode temp = node.getMidChild();
 //			TreeNode temp = new TreeNode (node.getMidChild().getDataToken(), node.getMidChild().getNextToken(), node.getMidChild().getLeftChild(), node.getMidChild().getMidChild(), node.getMidChild().getRightChild());
@@ -142,6 +141,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 //			node.setRightChild(node.getMidChild().getRightChild());
 //			node.setMidChild(node.getMidChild().getMidChild());
 //			evaluateSequencing(node, stack, memory);
+			stack.clear();
 			return true;
 		}
 		else {
@@ -157,6 +157,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 //			node.setMidChild(node.getRightChild().getMidChild());
 //			node.setRightChild(node.getRightChild().getRightChild());
 //			evaluateSequencing(node, stack, memory);
+			stack.clear();
 			return false;
 		}
 	}
@@ -250,7 +251,15 @@ public class evaluatorPhase2 extends ParserPhase2{
 				TreeNode t = evaluateWhileStatement (node, stack, memory);
 				node = t;
 			}
-			else if (node.getDataToken().getValue().equals("if")) evaluateIfStatement (node, stack, memory);	
+			else if (node.getDataToken().getValue().equals("if")) {
+				boolean ans = evaluateIfStatement (node, stack, memory);	
+				if (ans) {
+					node = node.getMidChild();				}
+				else {
+					node = node.getRightChild();
+				}
+			}
+			else if (node.getDataToken().getValue().equals("skip")) node = null;
 		}
 	}
 	

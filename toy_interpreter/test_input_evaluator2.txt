@@ -1,8 +1,9 @@
-z := 0;
-x := 3;
-y := 0;
-
-while x-y do
-	z := z + y;
-	y := y + 1
-endwhile
+if 5 then
+	if 1 - 2 then
+		x := 5
+	else
+		z := 6
+	endif
+else
+	t := 4 - 3
+endif
