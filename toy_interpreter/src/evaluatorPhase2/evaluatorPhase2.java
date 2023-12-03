@@ -129,6 +129,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 	public static boolean evaluateIfStatement (TreeNode node, Stack<Token> stack, Map<String, Integer> memory) {
 //		if (node == null) return;
 		preOrder (node.getLeftChild(), stack, memory);
+		if (stack.isEmpty()) return false;
 		if (Integer.valueOf(stack.peek().getValue()) > 0) {
 //			TreeNode temp = node.getMidChild();
 //			TreeNode temp = new TreeNode (node.getMidChild().getDataToken(), node.getMidChild().getNextToken(), node.getMidChild().getLeftChild(), node.getMidChild().getMidChild(), node.getMidChild().getRightChild());
@@ -157,7 +158,6 @@ public class evaluatorPhase2 extends ParserPhase2{
 //			node.setMidChild(node.getRightChild().getMidChild());
 //			node.setRightChild(node.getRightChild().getRightChild());
 //			evaluateSequencing(node, stack, memory);
-			stack.clear();
 			return false;
 		}
 	}
@@ -187,7 +187,9 @@ public class evaluatorPhase2 extends ParserPhase2{
 				node.setLeftChild(node.getLeftChild().getMidChild());
 			}
 			else {
+				if (stack.isEmpty()) return;
 				node.setLeftChild(node.getLeftChild().getRightChild());	
+				stack.clear();
 			}
 		}
 
@@ -200,6 +202,7 @@ public class evaluatorPhase2 extends ParserPhase2{
 		if (node == null) return;
 		preOrder(node.getRightChild(), stack, memory);
 		//stack.peek should return a single integer
+		if (stack.isEmpty()) return;
 		if (memory.containsKey(node.getLeftChild().getDataToken().getValue())==false) memory.put(node.getLeftChild().getDataToken().getValue(), Integer.valueOf(stack.peek().getValue()));
 //		for (Entry<String, Integer> entry : memory.entrySet()) {
 //			if (entry.getKey().equals(node.getLeftChild().getDataToken().getValue())) memory.replace(entry.getKey(), Integer.valueOf(stack.peek().getValue()));
@@ -272,7 +275,8 @@ public class evaluatorPhase2 extends ParserPhase2{
 //	}
 	
 	public static void writeResult(Map<String, Integer> memory, TreeNode node, String outputFile) throws IOException {
-		if (node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) return;
+		if (node == null || node.getError() || (node.getLeftChild() != null && node.getLeftChild().getError()) || (node.getRightChild() != null && node.getRightChild().getError())) return;
+		if (memory.isEmpty()) return;
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, true));
 		for (Entry<String, Integer> entry : memory.entrySet()) {
 			bw.newLine();

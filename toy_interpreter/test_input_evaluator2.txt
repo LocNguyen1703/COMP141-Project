@@ -2,7 +2,7 @@ if 5 then
 	if 1 - 2 then
 		x := 5
 	else
-		z := 6
+		z := 
 	endif
 else
 	t := 4 - 3

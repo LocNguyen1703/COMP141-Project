@@ -18,10 +18,9 @@ x: IDENTIFIER
 Line: 	else
 else: KEYWORD
 
-Line: 		z := 6
+Line: 		z := 
 z: IDENTIFIER
 :=: SYMBOL
-6: NUMBER
 
 Line: 	endif
 endif: KEYWORD
@@ -40,22 +39,3 @@ Line: endif
 endif: KEYWORD
 
 AST:
-if: KEYWORD
-	5: NUMBER
-	if: KEYWORD
-		-: SYMBOL
-			1: NUMBER
-			2: NUMBER
-		:=: SYMBOL
-			x: IDENTIFIER
-			5: NUMBER
-		:=: SYMBOL
-			z: IDENTIFIER
-			6: NUMBER
-	:=: SYMBOL
-		t: IDENTIFIER
-		-: SYMBOL
-			4: NUMBER
-			3: NUMBER
-
-z = 6
